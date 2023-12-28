@@ -23,7 +23,8 @@ def index(request):
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('home/',index),
     path('airecommend/', views.airecommend, name='airecommend'),
     path('file-upload/', views.file_upload, name='file_upload'),
+    path('path-to-image-upload-handler', views.image_upload_handler, name='image-upload-handler'),
+    path('airecommend_result', views.airecommend_result, name='airecommend_result'),
 ]

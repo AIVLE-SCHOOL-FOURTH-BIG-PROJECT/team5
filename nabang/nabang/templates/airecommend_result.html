@@ -28,7 +28,7 @@
     </section>
 
 <section class="file-upload-section">
-    <form id="image-upload-form" method="post" enctype="multipart/form-data">
+    <form action="/file-upload" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="file-upload-container">
             <label for="file-upload" class="file-upload-label">
