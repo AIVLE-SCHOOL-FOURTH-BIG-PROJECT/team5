@@ -17,6 +17,10 @@ from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 
 def index(request):
     return render(request,'index.html')
@@ -28,3 +32,6 @@ urlpatterns = [
     path('path-to-image-upload-handler', views.image_upload_handler, name='image-upload-handler'),
     path('airecommend_result', views.airecommend_result, name='airecommend_result'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
