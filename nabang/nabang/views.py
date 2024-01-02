@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-import viseionAI, cv2, io
+import viseionAI
 import numpy as np
 from PIL import Image
 
@@ -16,17 +16,19 @@ def file_upload(request):
         
         # 파일 처리 로직 작성
         # 예: 파일을 서버에 저장하고, 처리 결과를 반환
-        print('12743898764345678')
         return JsonResponse({'status': 'success', 'filename': uploaded_file.name})
     return JsonResponse({'status': 'error'}, status=400)
 
 def image_upload_handler(request):
     if request.method == 'POST':
         # 이미지 파일 처리
+        
         image_file = request.FILES['file']
         content = image_file.read()
         objects = viseionAI.obj_detection_file(content)
-        print(objects)
+        
+        for obj in objects['objects']:
+            obj['crop_img'].show()        
         
         return JsonResponse({'result': 'success'})
     return JsonResponse({'result': 'error'}, status=400)

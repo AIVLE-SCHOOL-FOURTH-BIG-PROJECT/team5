@@ -1,4 +1,4 @@
-import cv2, os, io
+import os, io
 from PIL import Image
 from google.cloud import vision
 import numpy as np
@@ -41,24 +41,22 @@ def localize_objects_file(content): #file
     return objectBox
 'ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ'
 def obj_detection_file(content):
-    np_arr = np.frombuffer(content, np.uint8)
-    img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    # np_arr = np.frombuffer(content, np.uint8)
+    # img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     objects = localize_objects_file(content)
     
     image_stream = io.BytesIO(content)
     with Image.open(image_stream) as img:
         width, height = img.size
-
-    result = {
-        'size': [width, height],
-    }
-    
-    for i, obj in enumerate(objects):
-        x1, y1, x2, y2 = obj['box']
-        cropped_img = img[y1:y2, x1:x2]
-        img_rgb = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
-        pil_img = Image.fromarray(img_rgb)
-        obj['crop_img'] = pil_img
+        result = {
+            'size': [width, height],
+        }
+        
+        for i, obj in enumerate(objects):
+            x1, y1, x2, y2 = obj['box']
+            cropped_img = img.crop((x1, y1, x2, y2))
+            obj['crop_img'] = cropped_img
+        
     result['objects'] = objects
     return result
 'ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ'
@@ -97,22 +95,21 @@ def obj_detection_file(content):
 #     return objectBox
 # 'ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ'
 # def obj_detection_path(path):
-#     img = cv2.imread(path)
 #     objects = localize_objects_path(path)
 
 #     fileName = os.path.basename(path)
-#     width, height = get_image_size(path)
+#     with Image.open(path) as img:
+#         width, height = img.size
+#         result = {
+#             'fileName': fileName,
+#             'size': [width, height],
+#         }
 
-#     result = {
-#         'fileName': fileName,
-#         'size': [width, height],
-#     }
-#     for i, obj in enumerate(objects):
-#         x1, y1, x2, y2 = obj['box']
-#         cropped_img = img[y1:y2, x1:x2]
-#         img_rgb = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2RGB)
-#         pil_img = Image.fromarray(img_rgb)
-#         obj['crop_img'] = pil_img
+#         for i, obj in enumerate(objects):
+#             x1, y1, x2, y2 = obj['box']
+#             cropped_img = img.crop((x1, y1, x2, y2))
+#             obj['crop_img'] = cropped_img
+
 #     result['objects'] = objects
 #     return result
             
