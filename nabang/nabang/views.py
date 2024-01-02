@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+import viseionAI, cv2, io
+import numpy as np
+from PIL import Image
 
 def index(request):
     return render(request, 'index.html')
@@ -13,7 +16,7 @@ def file_upload(request):
         
         # 파일 처리 로직 작성
         # 예: 파일을 서버에 저장하고, 처리 결과를 반환
-
+        print('12743898764345678')
         return JsonResponse({'status': 'success', 'filename': uploaded_file.name})
     return JsonResponse({'status': 'error'}, status=400)
 
@@ -21,12 +24,11 @@ def image_upload_handler(request):
     if request.method == 'POST':
         # 이미지 파일 처리
         image_file = request.FILES['file']
-        # 이미지 분석 로직 구현
-        # ...
-
-        # 분석 결과에 따라 결과 페이지로 리디렉션
+        content = image_file.read()
+        objects = viseionAI.obj_detection_file(content)
+        print(objects)
+        
         return JsonResponse({'result': 'success'})
-
     return JsonResponse({'result': 'error'}, status=400)
 
 def airecommend_result(request):
