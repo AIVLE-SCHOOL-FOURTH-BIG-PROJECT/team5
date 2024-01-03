@@ -4,8 +4,6 @@ from .utils.color_extraction import extract_ordered_dominant_colors
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 import viseionAI
-import numpy as np
-from PIL import Image
 
 def index(request):
     return render(request, 'index.html')
@@ -30,6 +28,14 @@ def image_upload_handler(request):
     if request.method == 'POST':
         try:
             image_file = request.FILES['file']
+            
+            # 탐지모델
+            content = image_file.read()
+            image_file.seek(0)
+            objects = viseionAI.obj_detection_file(content)
+            for obj in objects['objects']:
+                obj['crop_img'].show()  
+            
             num_colors = 3
             ordered_dominant_colors, ordered_percentages = extract_ordered_dominant_colors(image_file, num_colors)
             
@@ -40,14 +46,7 @@ def image_upload_handler(request):
             }
 
             # file_upload 함수에서 저장한 이미지 URL을 사용
-            uploaded_file_url = request.session.get('uploaded_image_url', '')
-            
-            # 탐지모델
-            content = image_file.read()
-            objects = viseionAI.obj_detection_file(content)
-            
-            for obj in objects['objects']:
-                obj['crop_img'].show()        
+            uploaded_file_url = request.session.get('uploaded_image_url', '')      
 
             return JsonResponse({'result': 'success', 'image_url': uploaded_file_url})
         except Exception as e:

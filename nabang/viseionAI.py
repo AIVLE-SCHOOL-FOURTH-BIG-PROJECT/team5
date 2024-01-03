@@ -1,7 +1,6 @@
-import os, io
+import io
 from PIL import Image
 from google.cloud import vision
-import numpy as np
 
 def get_image_size(path):
     with Image.open(path) as img:
