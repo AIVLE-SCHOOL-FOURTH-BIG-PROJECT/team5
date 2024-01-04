@@ -465,47 +465,56 @@ body {
     }
 
     /* clearfix 추가 (부모 요소가 자식 열의 높이를 고려하도록 함) */
-    .colors-container::after {
-        content: "";
-        display: table;
-        clear: both;
+    .signup-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 0 auto;
+        max-width: 500px;
+        padding: 20px;
     }
 
-    #signup-form {
+    .signup-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        margin: 0 50px; /* 좌우 마진 */
+        margin-bottom: 30px; /* 항목 간 거리 증가 */
+        width: 100%; /* 폼 그룹의 너비 설정 */
     }
     
-    #signup-form input[type="text"],
-    #signup-form input[type="email"],
-    #signup-form input[type="password"] {
-        margin-bottom: 10px; /* 입력 필드 간격 */
+    .form-group:last-of-type {
+        margin-top: 40px; /* 가입하기 버튼과의 거리 */
+    }
+
+    label {
+        min-width: 150px; /* 라벨 너비 조정 */
+        margin-right: 10px;
     }
     
-    /* 가입하기 버튼 스타일 */
-    #signup-form button[type="submit"] {
-        padding: 6px 15px;
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    select {
+        width: 100%; /* 입력 필드 너비를 컨테이너에 맞게 조정 */
+        padding: 8px; /* 적절한 패딩 추가 */
+        margin-right: 20px;
+        box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+    }
+
+    .submit-button {
+        padding: 8px 18px;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 16px;
         background-color: #27282A;
         color: #F5F5F5;
         border: none;
-        border-radius: 14px;
-    }
-
-    .terms-content, .personaldata-content {
-        margin: 0 auto; /* 중앙 정렬 */
-        padding: 0 50px; /* 좌우 패딩 */
-        max-width: 800px; /* 최대 너비 설정 */
-    }
-    
-    /* 세부 스타일링을 위한 추가 클래스 */
-    .terms-content h1, .personaldata-content h1 {
-        /* 제목에 대한 스타일 */
-    }
-    
-    .terms-content p, .personaldata-content p {
-        /* 문단에 대한 스타일 */
+        border-radius: 18px;
+        display: block;
+    margin: 0 auto; /* 화면 중앙에 버튼 배치 */
     }

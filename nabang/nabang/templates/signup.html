@@ -22,27 +22,47 @@
     </nav>
 </head>
 <body>
-    <form id="signup-form" action="/signup" method="post">
-        <h2>회원가입</h2>
-
-        <label for="username">사용자 이름:</label>
-        <input type="text" id="username" name="username" required>
-
-        <label for="email">이메일:</label>
-        <input type="email" id="email" name="email" required>
-
-        <label for="password">비밀번호:</label>
-        <input type="password" id="password" name="password" required>
-
-        <label for="confirm_password">비밀번호 확인:</label>
-        <input type="password" id="confirm_password" name="confirm_password" required>
-
-        <div>
-            <input type="checkbox" id="agree" name="agree" required>
-            <label for="agree">개인정보 처리방침에 동의합니다. (필수)</label>
-        </div>
-
-        <button type="submit">가입하기</button>
+    <div class="signup-container">
+        <h2 class="signup-title">회원가입</h2>
+        <form id="signup-form" action="/signup" method="post">
+            <div class="form-group">
+                <label for="username">사용자 이름:</label>
+                <input type="text" id="username" name="username" placeholder="홍길동" required>
+            </div>
+            <div class="form-group">
+                <label for="email">이메일:</label>
+                <input type="email" id="email" name="email" placeholder="hongildong@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호:</label>
+                <input type="password" id="password" name="password" 
+                       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+                       title="비밀번호는 8자 이상이며, 숫자, 대문자, 소문자, 특수문자를 각각 하나 이상 포함해야 합니다." 
+                       placeholder="비밀번호 (8자 이상, 특수문자 포함)" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">비밀번호 확인:</label>
+                <input type="password" id="confirm_password" name="confirm_password" 
+                       placeholder="비밀번호 확인" required>
+            </div>
+            <span id="passwordMatch" class="password-status"></span>
+            <div class="form-group">
+                <label for="birthdate">생년월일:</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">성별:</label>
+                <select id="gender" name="gender" required>
+                    <option value="">성별 선택</option>
+                    <option value="male">남성</option>
+                    <option value="female">여성</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="submit-button">가입하기</button>
+            </div>
+        </form>
+    </div>
     </form>
         <footer class="site-footer">
         <div class="container">
@@ -77,6 +97,7 @@
         </div>
     </div>
     <script src="{% static 'js/common.js' %}">
+        <script src="{% static 'js/signup.js' %}">
     </script>
 </body>
 
