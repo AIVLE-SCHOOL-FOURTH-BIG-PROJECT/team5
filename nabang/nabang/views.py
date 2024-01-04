@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from .utils.color_extraction import extract_ordered_dominant_colors 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate
 
 def index(request):
     return render(request, 'index.html')
@@ -74,3 +76,25 @@ def your_view_function(request):
         'analysis_colors_and_percentages': colors_and_percentages,
     }
     return render(request, 'airecommend_result.html', context)
+
+def signup(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+
+        if password == confirm_password:
+            user = User.objects.create_user(username, email, password)
+            # 로그인 처리 등 추가 로직
+            return redirect('index')  # 또는 다른 페이지로 리디렉션
+        else:
+            return render(request, 'signup.html', {'error': '비밀번호가 일치하지 않습니다.'})
+
+    return render(request, 'signup.html')
+
+def personal_data(request):
+    return render(request, 'personaldata.html')
+
+def terms_of_service(request):
+    return render(request, 'terms.html')

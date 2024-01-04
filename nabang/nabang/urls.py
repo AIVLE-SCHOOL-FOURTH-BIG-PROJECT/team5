@@ -31,6 +31,9 @@ urlpatterns = [
     path('file-upload/', views.file_upload, name='file_upload'),
     path('path-to-image-upload-handler', views.image_upload_handler, name='image-upload-handler'),
     path('airecommend_result', views.airecommend_result, name='airecommend_result'),
+    path('signup/', views.signup, name='signup'),
+    path('personaldata/', views.personal_data, name='personal_data'),
+    path('terms/', views.terms_of_service, name='terms_of_service'),
 ]
 
 if settings.DEBUG:

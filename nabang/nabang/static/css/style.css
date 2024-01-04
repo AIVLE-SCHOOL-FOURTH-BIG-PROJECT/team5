@@ -470,3 +470,42 @@ body {
         display: table;
         clear: both;
     }
+
+    #signup-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 50px; /* 좌우 마진 */
+    }
+    
+    #signup-form input[type="text"],
+    #signup-form input[type="email"],
+    #signup-form input[type="password"] {
+        margin-bottom: 10px; /* 입력 필드 간격 */
+    }
+    
+    /* 가입하기 버튼 스타일 */
+    #signup-form button[type="submit"] {
+        padding: 6px 15px;
+        text-decoration: none;
+        font-size: 14px;
+        background-color: #27282A;
+        color: #F5F5F5;
+        border: none;
+        border-radius: 14px;
+    }
+
+    .terms-content, .personaldata-content {
+        margin: 0 auto; /* 중앙 정렬 */
+        padding: 0 50px; /* 좌우 패딩 */
+        max-width: 800px; /* 최대 너비 설정 */
+    }
+    
+    /* 세부 스타일링을 위한 추가 클래스 */
+    .terms-content h1, .personaldata-content h1 {
+        /* 제목에 대한 스타일 */
+    }
+    
+    .terms-content p, .personaldata-content p {
+        /* 문단에 대한 스타일 */
+    }

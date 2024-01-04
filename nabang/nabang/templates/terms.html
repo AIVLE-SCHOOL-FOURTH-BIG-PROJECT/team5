@@ -1,18 +1,15 @@
 {% load static %}
-{% load color_filters %}
-
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맞춤형 가구 추천</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <nav class="nav-container">
-        <div class="nav-content">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>나만의 방 나방</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <nav class="nav-container">
+            <div class="nav-content">
             <a href="{% url 'index' %}">
                 <img src="{% static 'images/logo.png' %}" alt="로고" class="logo">
-            </a>
             <ul class="nav-menu">
                 <li><a href="/airecommend/">맞춤형 가구 추천</a></li>
                 <li><a href="ai-remodeling">AI 리모델링 컨설팅</a></li>
@@ -21,42 +18,21 @@
                 <a href="#" class="nav-login-link">로그인</a>
                 <a href="/signup" class="signup-button">회원가입</a>
             </div>
-        </div>
-    </nav>
-</head>
-<body class="airecommend-page">
-    <section class="ai-recommend-section">
-        <h2>AI기반 맞춤형 가구 추천</h2>
-        <div class="uploaded-image">
-            <img src="{{ image_url }}" alt="업로드된 이미지">
-        </div>
-    </section>
-
-    <main>
-        <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
-        <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
-
-        {% block content %}
-        <h1>{{ result }}</h1>
-        {% if analysis_colors and analysis_percentages %}
-            <div class="colors-container">
-                {% for color in analysis_colors %}
-                <div class="color-box" style="background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
-                {% endfor %}
-                </div>
-
-                {% for percentage in analysis_percentages %}
-                    <p>비율: {{ percentage }}%</p>
-                {% endfor %}
             </div>
-        {% else %}
-            <p>분석 결과가 없습니다.</p>
-        {% endif %}
+        </nav>
+    </head>
+<body>
+<div class="terms-content">
+        <h1>이용약관</h1>
+        <p>본 이용약관은 당사 서비스의 이용 조건 및 절차, 당사와 이용자의 권리, 의무 및 책임 사항 등을 규정합니다.</p>
 
-        {% endblock %}
-        
-    </main>
-
+    <h2>서비스 이용 조건</h2>
+    <p>당사의 서비스 이용 조건은 다음과 같습니다.</p>
+    <ul>
+        <li>서비스 별 이용 안내에 따른 준수 사항</li>
+        <!-- 추가 조건 -->
+    </ul>
+</div>
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
@@ -67,6 +43,7 @@
                     <li><a href="/contact/">문의하기</a></li>
                 </ul>
             </div>
+            </div>
         </div>
     </footer>
     <div id="login-popup" class="popup">
@@ -74,10 +51,12 @@
             <span class="close-button">&times;</span>
             <!-- 로그인 폼 -->
             <form id="login-form">
+                <h1>로그인</h1>
                 <input type="email" placeholder="이메일">
                 <input type="password" placeholder="비밀번호">
                 <button type="submit">로그인</button>
             </form>
+    
             <!-- 소셜 로그인 버튼 -->
             <div class="social-login">
                 <button class="social-button kakao-login">카카오톡 로그인</button>
@@ -86,7 +65,6 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'js/airecommend.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
 </body>
 </html>
