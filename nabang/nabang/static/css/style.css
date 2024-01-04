@@ -439,34 +439,4 @@ body {
     }
 }
 
-    /* 좌측 열 스타일링 */
-    .left-column {
-        float: left; /* 왼쪽 정렬 */
-        width: 50%; /* 좌측 열 너비 조절 */
-    }
 
-    /* 우측 열 스타일링 */
-    .right-column {
-        float: left; /* 왼쪽 정렬 */
-        width: 50%; /* 우측 열 너비 조절 */
-    }
-
-    /* 색상 상자 스타일링 */
-    .color-box {
-        width: 50px; /* 원하는 너비 조절 */
-        height: 50px; /* 원하는 높이 조절 */
-        margin-right: 10px; /* 색상 상자 사이 간격 조절 */
-    }
-
-    /* 색상 비율 스타일링 */
-    .color-percentage {
-        font-size: 16px; /* 원하는 글꼴 크기 조절 */
-        margin-bottom: 10px; /* 색상 비율 아래 여백 조절 */
-    }
-
-    /* clearfix 추가 (부모 요소가 자식 열의 높이를 고려하도록 함) */
-    .colors-container::after {
-        content: "";
-        display: table;
-        clear: both;
-    }

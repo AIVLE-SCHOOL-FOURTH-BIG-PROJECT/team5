@@ -9,9 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,19 +25,26 @@ SECRET_KEY = "django-insecure-hqf*sj6158$j73y(%wbf&j&w-5jx4$0vk2d--q+srdujh=zoka
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    'django.contrib.sites',
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "nabang",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.naver',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +55,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = "nabang.urls"
@@ -59,7 +68,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -67,6 +76,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -78,13 +88,23 @@ WSGI_APPLICATION = "nabang.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nabang',
+        'USER': 'root',
+        'PASSWORD': 'aivle',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -116,14 +136,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-import os
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'nabang', 'static'),
 ]
@@ -132,3 +149,71 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_URL = '/../'  # 로그인이 필요한 경우 리다이렉트할 URL
+LOGOUT_URL = '/../'  # 로그아웃이 필요한 경우 리다이렉트할 URL
+LOGIN_REDIRECT_URL = '/../'
+LOGOUT_REDIRECT_URL = '/../' 
+
+SITE_ID = 1 
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL = 'index'
+ACCOUNT_LOGOUT_ON_GET = True 
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_EMAIL_VERIFICATION='none'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'kakao': {
+        'APP': {
+            'client_id':'be56835380f36db1533c79bddf121f90',
+            'secret':'WyB7IO56SnuDWbn9K2J5JHNG0CGHZeu2',
+            'SCOPE':[],
+        },
+        'SITE_ID': 1, 
+    },
+    'google': {
+        'APP': {
+            'client_id': '1077924745345-ov489soltioemnpbllr0gorsf9u2juhs.apps.googleusercontent.com',
+            'secret': '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',
+            'key': ''
+        },
+        'SITE_ID': 1, 
+    },
+    'naver': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'state': 'random_state_string'},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'profile_image',
+        ],
+        'EXCHANGE_TOKEN': True,
+        'VERIFIED_EMAIL': True,
+        'APP': {
+            'client_id': 'AwADkUp7vGQQMqdcBcyC',
+            'secret': 'mkLMtAaKRQ',
+            'key': ''
+        },
+        'SITE_ID': 1, 
+    },
+}
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Session settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 또는 'django.contrib.sessions.backends.cache'
+SESSION_COOKIE_NAME = 'nabang_cookie'
+SESSION_COOKIE_AGE = 1209600  # 세션의 유효 기간(초 단위), 2주
+SESSION_SAVE_EVERY_REQUEST = True

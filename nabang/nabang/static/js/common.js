@@ -18,3 +18,25 @@ document.querySelector('.nav-login-link').addEventListener('click', function(eve
 document.querySelector('.close-button').addEventListener('click', function() {
     hideLoginPopup(); // 로그인 팝업 숨김
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Django에서 전달한 변수를 확인하여 로그인 실패 시 SweetAlert2 알림 표시
+    if (window.loginFailed) {
+        Swal.fire({
+            icon: 'error',
+            title: '로그인 실패',
+            text: '아이디 또는 비밀번호를 확인하세요.',
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Django에서 전달한 변수를 확인하여 로그인 실패 시 SweetAlert2 알림 표시
+    if (window.loginFailed) {
+        Swal.fire({
+            icon: 'error',
+            title: '로그인 실패',
+            text: '아이디 또는 비밀번호를 확인하세요.',
+        });
+    }
+});

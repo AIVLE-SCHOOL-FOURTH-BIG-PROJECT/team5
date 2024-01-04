@@ -18,8 +18,13 @@
                 <li><a href="ai-remodeling">AI 리모델링 컨설팅</a></li>
             </ul>
             <div class="nav-right">
+                {% if not user.is_authenticated %}
                 <a href="#" class="nav-login-link">로그인</a>
                 <a href="/signup" class="signup-button">회원가입</a>
+                {% else %}
+                <a class="nav-link" href="#">{{user}}님!</a>
+                <a class="nav-link" href="{% url 'logout' %}">로그아웃</a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -28,7 +33,9 @@
     <section class="ai-recommend-section">
         <h2>AI기반 맞춤형 가구 추천</h2>
         <div class="uploaded-image">
-            <img src="{{ image_url }}" alt="업로드된 이미지">
+            {% if image_url %}
+                <img id="uploaded-image" src="{{ image_url.url }}" alt="Uploaded Image">
+            {% endif %}
         </div>
     </section>
 
@@ -38,17 +45,16 @@
 
         {% block content %}
         <h1>{{ result }}</h1>
-        {% if analysis_colors and analysis_percentages %}
-            <div class="colors-container">
-                {% for color in analysis_colors %}
-                <div class="color-box" style="background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
-                {% endfor %}
-                </div>
-
-                {% for percentage in analysis_percentages %}
-                    <p>비율: {{ percentage }}%</p>
-                {% endfor %}
+        {% if analysis_colors %}
+        <div class="colors-container">
+            {% for color in analysis_colors %}
+            <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
+            {% endfor %}
+            {% for percentage in analysis_percentages %}
+                <p>비율: {{ percentage }}%</p>
+            {% endfor %} 
             </div>
+
         {% else %}
             <p>분석 결과가 없습니다.</p>
         {% endif %}
@@ -58,35 +64,27 @@
     </main>
 
     <footer class="site-footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>Copyright AIVLE School Team 5. All Rights Reserved.</p>
-                <ul class="footer-links">
-                    <li><a href="/privacy/">개인정보 처리방침</a></li>
-                    <li><a href="/terms/">이용약관</a></li>
-                    <li><a href="/contact/">문의하기</a></li>
-                </ul>
+        <div id="login-popup" class="popup">
+            <div class="popup-content">
+                <span class="close-button">&times;</span>
+                <!-- 로그인 폼 -->
+                <form id="login-form" method="post" action="{% url 'custom_login' %}">
+                    {% csrf_token %}
+                    <h1>로그인</h1>
+                    <input type="text" placeholder="아이디" name="username" required>
+                    <input type="password" placeholder="비밀번호" name="password" required>
+                    <button type="submit">로그인</button>
+                </form>
+                <!-- 소셜 로그인 버튼 -->
+                <div class="social-login">
+                    {% load socialaccount %}
+                    <a href='{% provider_login_url "kakao" %}'><button class="social-button kakao-login">카카오톡 로그인</button></a>
+                    <a href="{% provider_login_url 'naver' %}"><button class="social-button naver-login">네이버 로그인</button></a>
+                    <a href="{% provider_login_url 'google' %}"><button class="social-button google-login">구글 로그인</button></a>
+                </div>
             </div>
         </div>
-    </footer>
-    <div id="login-popup" class="popup">
-        <div class="popup-content">
-            <span class="close-button">&times;</span>
-            <!-- 로그인 폼 -->
-            <form id="login-form">
-                <input type="email" placeholder="이메일">
-                <input type="password" placeholder="비밀번호">
-                <button type="submit">로그인</button>
-            </form>
-            <!-- 소셜 로그인 버튼 -->
-            <div class="social-login">
-                <button class="social-button kakao-login">카카오톡 로그인</button>
-                <button class="social-button naver-login">네이버 로그인</button>
-                <button class="social-button google-login">구글 로그인</button>
-            </div>
-        </div>
-    </div>
-    <script src="{% static 'js/airecommend.js' %}"></script>
-    <script src="{% static 'js/common.js' %}"></script>
+        <script src="{% static 'js/airecommend.js' %}"></script>
+        <script src="{% static 'js/common.js' %}"></script>
 </body>
 </html>
