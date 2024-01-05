@@ -47,14 +47,19 @@
         <h1>{{ result }}</h1>
         {% if color_per and style_per %}
         <div class="colors-container">
-            {% for color, per in color_per %}
+            {% comment %} {% for color, per in color_per %}
             <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
-            <p>비율: {{ per }}%</p>
+            <p style="margin-left: 10px;">비율: {{ per }}%</p>
+            {% endfor %} {% endcomment %}
+            {% for color, per in color_per %}
+                <div style="display: inline-block;">
+                    <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
+                    <p style="display: inline-block; margin-left: 10px;">비율: {{ per }}%</p>
+                </div>
             {% endfor %}
 
             {% for style, per in style_per %}
-            <p>스타일: {{ style }}</p>
-            <p>비율: {{ per }}%</p>
+            <p>스타일: {{ style }} 비율: {{ per }}%</p>
             {% endfor %}
         </div>
 
