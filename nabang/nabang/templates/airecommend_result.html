@@ -45,15 +45,18 @@
 
         {% block content %}
         <h1>{{ result }}</h1>
-        {% if analysis_colors %}
+        {% if color_per and style_per %}
         <div class="colors-container">
-            {% for color in analysis_colors %}
+            {% for color, per in color_per %}
             <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
+            <p>비율: {{ per }}%</p>
             {% endfor %}
-            {% for percentage in analysis_percentages %}
-                <p>비율: {{ percentage }}%</p>
-            {% endfor %} 
-            </div>
+
+            {% for style, per in style_per %}
+            <p>스타일: {{ style }}</p>
+            <p>비율: {{ per }}%</p>
+            {% endfor %}
+        </div>
 
         {% else %}
             <p>분석 결과가 없습니다.</p>

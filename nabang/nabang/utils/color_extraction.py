@@ -71,11 +71,7 @@
 # # print("Ordered Dominant Colors:\n", ordered_dominant_colors)
 # # print("Percentage of each color (rounded):\n", ordered_percentages)
 
-
-
-
 import numpy as np
-from matplotlib import image as mp_image
 from sklearn.cluster import KMeans
 # from cuml.cluster import KMeans
 from PIL import Image
@@ -116,8 +112,10 @@ def extract_ordered_dominant_colors(image_file, num_colors):
     ordered_percentages = percentages_rounded[ordered_indices].tolist()
     # ordered_colors = colors[ordered_indices]
     # ordered_percentages = percentages_rounded[ordered_indices]
-    
-    return ordered_colors, ordered_percentages
+    result =[]
+    for i in range(3):
+        result.append([ordered_colors[i], ordered_percentages[i]])
+    return result
     # return 0, 0
 
 # print(extract_ordered_dominant_color())

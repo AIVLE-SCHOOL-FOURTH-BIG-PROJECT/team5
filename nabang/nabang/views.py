@@ -5,10 +5,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from nabang.adapters import CustomSocialAccountAdapter
-from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-import viseionAI
+import nabang.utils.viseionAI as viseionAI
+import nabang.utils.style_classify as style_classify
+import joblib
+
+
+style_model = joblib.load('./nabang/utils/svm_model.joblib')
+le = joblib.load('./nabang/utils/label_encoder.joblib') # Load the LabelEncoder
 
 def index(request):
     return render(request, 'index.html')
@@ -41,17 +45,26 @@ def image_upload_handler(request):
             # 탐지모델
             objects = viseionAI.obj_detection_file(image_file.read())
             image_file.seek(0)
+            size = objects['size'][0] * objects['size'][1]
+            style_percentage =[]
             for obj in objects['objects']:
-                obj['crop_img'].show() 
-                
+                percent = viseionAI.box_percentage(size, obj['box'])
+                crop_processing = style_classify.process_image_file(obj['crop_img'])
+                crop_predict = style_model.predict(crop_processing)
+                crop_style = le.inverse_transform(crop_predict)
+                temp =[crop_style[0], percent] # 각 obj 스타일-비율
+                style_percentage.append(temp) # 순위별 style-비율
+            print(style_percentage)
+            
             num_colors = 3
-            ordered_dominant_colors, ordered_percentages = extract_ordered_dominant_colors(image_file, num_colors)
-            print(ordered_dominant_colors)
-            print(ordered_percentages)
+            color_percentage = extract_ordered_dominant_colors(image_file, num_colors) # 순위별 rgb-비율
+            print('all: ',color_percentage)
             # 세션에 분석 결과 저장
             request.session['analysis_result'] = {
-                'colors': ordered_dominant_colors,
-                'percentages': ordered_percentages,
+                # 'colors': ordered_dominant_colors,
+                # 'percentages': ordered_percentages,
+                'color_percentage': color_percentage,
+                'style_percentage': style_percentage,
             }
 
             fs = FileSystemStorage()
@@ -78,8 +91,10 @@ def airecommend_result(request):
     #로그 확인 부분
     context = {
         'result': '분석 결과',
-        'analysis_colors': analysis_result.get('colors'),
-        'analysis_percentages': analysis_result.get('percentages'),
+        # 'analysis_colors': analysis_result.get('colors'),
+        # 'analysis_percentages': analysis_result.get('percentages'),
+        'color_per': analysis_result.get('color_percentage'),
+        'style_per': analysis_result.get('style_percentage'),            
         'image_url': image_url,  # 이미지 URL 추가
     }
 
