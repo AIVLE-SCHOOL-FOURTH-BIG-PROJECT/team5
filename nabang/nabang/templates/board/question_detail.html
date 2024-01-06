@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ question.subject }}{% endblock %}
+
+{% load board_filter %}
+
+{% block content %}
+
+<article class="blog-post">
+    <div class="d-grid gap-2">
+        <div class="card g-5 rounded shadow-sm">
+            <div class="card-body">
+                <h2 class="blog-post-title">{{ question.subject }}</h2>
+                <h6 class="card-subtitle mb-2 text-muted">{{ question.create_date|date:'Y-m-d H:i' }} by
+                    <b>{{ question.author.username }}</b>
+                    {% if question.modify_date %}(수정: {{ question.modify_date|date:'Y-m-d H:i' }}){% endif %}</h6>
+                <p class="card-text"></p>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a href="{% url 'board:vote_question' question.id %}" data-uri="" id="recommend">
+                            <button type="button"
+                                    class="btn btn-{% if user.is_authenticated %}{% if user in question.voter.all %}primary{% endif %}{% endif %}">
+                                <i class="bi bi-hand-thumbs-up-fill"></i>
+                                <span class="badge bg-light" style="color:black;">{{ question.voter.count }}</span>
+                            </button>
+                        </a>
+                    </div>
+                    <div>
+                    <span class="align-middle user-select-none">
+                    <i class="bi bi-eye-fill"></i> {{ question.hit }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card gap-1 rounded shadow-sm">
+            <div class="card-body">
+                {{ question.content|escape|mark }}
+            </div>
+
+            {% if request.user == question.author %}
+            <div class="my-3 mx-auto user-select-none">
+                <a href="{% url 'board:question_modify' question.id  %}"
+                   class="btn btn-sm btn-outline-secondary">수정</a>
+                <a href="javascript:;" class="delete btn btn-sm btn-outline-danger" onclick="clickDeleteButton(this);"
+                   data-uri="{% url 'board:question_delete' question.id  %}">삭제</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</article>
+
+<!-- 사용자오류 표시 -->
+<div class="container my-3">
+
+    <div class="modal fade" id="recommendErrorModal" tabindex="-1" aria-labelledby="alertModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" role="alert">
+                {% for message in messages %}
+                <div class="modal-header alert-warning">
+                    <h5 class="modal-title" id="alertModalTitle">Messages</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body alert-warning">
+
+                    <h4 class="alert-heading">{{ message.tags|title }}!</h4>
+                    <p>{{ message.message }}</p>
+
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 답변 부분 시작 -->
+
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+    {% for field in form %}
+    {% if field.errors %}
+    <strong>{{ field.label }}</strong>
+    {{ field.errors }}
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="card my-3 p-3 bg-body rounded shadow-sm">
+    <h6 class="border-bottom pb-2 mb-0 text-end user-select-none">{{question.answer_set.count}} 개의 답변이 있습니다.</h6>
+
+    <!-- 답변 -->
+    {% for answer in question.answer_set.all %}
+    <a name="answer_{{ answer.id }}" class="anchor"></a>
+
+    <div class="d-flex text-muted pt-3 row">
+        <svg xmlns="http://www.w3.org/2000/svg" role="img" width="32" height="32" fill=""
+             class="bi bi-person-square bd-placeholder-img flex-shrink-0 rounded col-auto" viewBox="0 0 16 16"
+             aria-label="Placeholder: 32x32" preserveAspectRatio="xMidYMid slice" focusable="false"><title>
+            Placeholder</title>
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1v-1c0-1-1-4-6-4s-6 3-6 4v1a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12z"/>
+        </svg>
+        <div class="pb-3 mb-0 small border-bottom col w-auto">
+            <div class="row justify-content-between">
+                <strong class="d-block text-gray-dark col-4">{{ answer.author.username }}</strong>
+                <div class="col-4 ps-1 text-end user-select-none">
+                    {% if request.user == answer.author %}
+                    <a href="{% url 'board:answer_modify' answer.id %}" class="link-secondary">수정</a>
+                    <a href="javascript:" class="delete link-danger"
+                       data-uri="{% url 'board:answer_delete' answer.id %}" onclick="clickDeleteButton(this);">삭제</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="fs-5">{{ answer.content }}</div>
+            <div class="row user-select-none">
+                <div class="text-gray">
+                    ({{ answer.create_date|date:'Y-m-d H:i' }}{% if answer.modify_date %} | 수정:
+                    {{ answer.modify_date|date:'Y-m-d H:i' }}{% endif %})
+                </div>
+
+                {% for comment in answer.comment_set.all %}
+                <div>
+                    <div class="badge bg-light text-wrap text-start lh-base" style="font-size: 0.8rem;">
+                        {{ comment.content }} ( {{ comment.author }} | {{ comment.modify_date|date:"Y-m-d H:i" }} )
+                        {% if request.user == comment.author %}
+                        <a href="javascript:" style="color:grey;"
+                           data-uri="{% url 'board:comment_delete_answer' comment.id %}"
+                           onclick="clickDeleteButton(this);">
+                            <i class="bi bi-x-square-fill"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                <small class="d-block text-start mt-3 user-select-none">
+                    <form action="{% url 'board:comment_create_answer' answer.id %}" method="post">
+                        {% csrf_token %}
+                        <a href="javascript:;" onclick="addCommentInput(this);">댓글 추가</a>
+                    </form>
+                </small>
+
+            </div>
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    <small class="d-block text-end mt-3 user-select-none">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#answerAdd">답변 추가</a>
+    </small>
+
+    <div class="modal fade" id="answerAdd" tabindex="-1" aria-labelledby="answerAddLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="answerAddLabel">답변 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form action="{% url 'board:answer_create' question.id %}" method="post" class="my-3">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="content" class="col-form-label">답변 내용:</label>
+                        <textarea class="form-control" name="content"
+                                  {% if not user.is_authenticated %}disabled{% endif %}
+                                  id="content"
+                                  rows="5">{{ form.content.value|default_if_none:'' }}</textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+<!-- 답변 부분 끝 -->
+
+{% endblock %}
+
+{% block script %}
+<script type='text/javascript'>
+function clickDeleteButton(e) {
+    if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = e.dataset.uri
+    }
+}
+
+function addCommentInput(obj) {
+
+    var newdiv = document.createElement('div')
+    newdiv.innerHTML = "<input id='inputComment' name='content' type='text' class='form-control' placeholder='댓글을 입력하세요.' onkeypress='javascript:enterComment(this);'>"
+    obj.parentElement.appendChild(newdiv)
+    obj.remove()
+    newdiv.children[0].focus()
+
+}
+
+function enterComment(e) {
+    if (!e) e = window.event;
+    var keyCode = e.code || e.key;
+    if (keyCode == 'Enter'){
+        e.parentElement.parentElement.submit()
+    }
+}
+
+{% if messages %}
+var myModal = new bootstrap.Modal(document.getElementById("recommendErrorModal"), {})
+document.onreadystatechange = function () {
+  myModal.show()
+}
+{% endif %}
+
+</script>
+{% endblock %}

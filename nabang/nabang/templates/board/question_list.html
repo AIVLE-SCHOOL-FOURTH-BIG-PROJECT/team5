@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}게시판홈{% endblock %}
+
+{% load board_filter %}
+
+{% block content %}
+<main>
+    <div class="container-sm p-2 user-select-none">
+
+<!--        <h2 class="text-center">Question <b>List</b></h2>-->
+
+        <div class="d-flex bd-highlight mb-3">
+            <div class="me-auto p-2 bd-highlight">
+                <select class="form-select so" onchange="changeSelect(this);">
+                    {% comment %} {{ so }} {% endcomment %}
+                    <option value="recent" {% if so == 'recent' %}selected{% endif %}>최신순</option>
+                    <option value="view" {% if so == 'view' %}selected{% endif %}>조회순</option>
+                    <option value="recommend" {% if so == 'recommend' %}selected{% endif %}>추천순</option>
+                    <option value="popular" {% if so == 'popular' %}selected{% endif %}>답변순</option>
+                </select></div>
+
+            <div class="p-2 bd-highlight">
+                <a href="{% url 'board:question_create' %}" class="btn btn-info rounded-pill"><i class="bi bi-plus"></i>
+                    추가</a>
+            </div>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+            <tr class="text-center align-bottom user-select-none">
+                <th scope="col" class="col">#</th>
+<!--                <th scope="col" class="col">Like!</th>-->
+                <th scope="col" class="col-5">Title</th>
+                <th scope="col" class="col">Author</th>
+                <th scope="col" class="col">Date</th>
+                <th scope="col" class="col">Views</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% if question_list %}
+            {% for question in question_list %}
+            <tr class="text-center align-middle tr-list" onclick="window.location='{% url 'board:detail' question.id %}';">
+                <td>{{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
+                </td>
+                {% comment %} 오름차순 정렬
+                <td>{{ question_list.start_index|add:forloop.counter|sub:1 }}</td>
+                <td>
+                    {% if question.voter.all.count > 0 %}
+                    <span class="badge bg-primary px-2 py-1">{{ question.voter.all.count }}</span>
+                    {% endif %}
+                </td>
+                {% endcomment %}
+                <td class="text-start">
+                    {% if question.voter.all.count > 0 %}
+                    <span class="badge bg-primary px-2 py-1">{{ question.voter.all.count }}</span>
+                    {% endif %}
+                    <span class="text-primary">{{ question.subject }}</span>
+                    {% if question.answer_set.count > 0 %}
+                    <span class="text-danger small ml-2">[{{ question.answer_set.count }}]</span>
+                    {% endif %}
+                </td>
+                <td>{{ question.author.username }}</td>
+                <td>{{ question.create_date|date:'Y-m-d' }}</td>
+                <td>{{ question.hit }}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td class="text-center" colspan="5">게시글이 없습니다.</td>
+
+                {% endif %}
+            </tr>
+
+            </tbody>
+        </table>
+
+
+        <div class="search-box mb-3" style="width:20;">
+            <input id="inputSearch" type="text" class="form-control kw" placeholder="검색어를 입력하세요."
+                   value="{{ kw|default_if_none:'' }}">
+        </div>
+
+        <!-- 페이징처리 시작 -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center user-select-none">
+                <!-- 이전페이지 -->
+                {% if question_list.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" type="button" href="javascript:;" onclick="clickPage(1);">&laquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" type="button" href="javascript:;" onclick="clickPage({{ question_list.previous_page_number }})">&lsaquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" type="button" tabindex="-1" aria-disabled="true">&lsaquo;</a>
+                </li>
+                {% endif %}
+                <!-- 페이지리스트 -->
+                {% for page_number in question_list.paginator.page_range %}
+                {% if question_list.number|add:-4 <= page_number and page_number <= question_list.number|add:4 %}
+                {% if page_number == question_list.number %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" type="button">{{ page_number }}</a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" type="button" href="javascript:;" onclick="clickPage({{ page_number }})">{{ page_number }}</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                <!-- 다음페이지 -->
+                {% if question_list.has_next %}
+                <li class="page-item">
+                    <a class="page-link" type="button" href="javascript:;" onclick="clickPage({{ question_list.next_page_number }})">&rsaquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" type="button" href="javascript:;" onclick="clickPage({{ last_page }})">&raquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" type="button" tabindex="-1" aria-disabled="true">&raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        <!-- 페이징처리 끝 -->
+    </div>
+</main>
+
+
+<form id="searchForm" method="get" action="{% url 'board:index' %}">
+    <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+    <input type="hidden" id="page" name="page" value="{{ page }}">
+    <input type="hidden" id="so" name="so" value="{{ so }}">
+</form>
+
+{% endblock %}
+
+{% block script %}
+<script type='text/javascript'>
+// Pagination
+function clickPage(num) {
+    document.getElementById("page").value = num
+    document.getElementById("searchForm").submit()
+}
+
+// Sorting
+function changeSelect(obj) {
+    document.getElementById("so").value = obj.value
+    document.getElementById("page").value = 1
+    document.getElementById("searchForm").submit()
+}
+
+// Search
+document.getElementById('inputSearch').onkeypress = function(e){
+    if (!e) e = window.event;
+    var keyCode = e.code || e.key;
+    if (keyCode == 'Enter'){
+        document.getElementById("kw").value = document.getElementById("inputSearch").value
+        document.getElementById("page").value = 1
+        document.getElementById("searchForm").submit()
+    }
+}
+
+</script>
+{% endblock %}

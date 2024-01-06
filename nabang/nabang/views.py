@@ -93,8 +93,5 @@ def signup(request):
 
     return render(request, 'signup.html')
 
-def personal_data(request):
-    return render(request, 'personaldata.html')
-
-def terms_of_service(request):
-    return render(request, 'terms.html')
+def rule(request):
+    return render(request, 'rule.html')

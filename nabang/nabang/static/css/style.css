@@ -518,3 +518,34 @@ body {
         display: block;
     margin: 0 auto; /* 화면 중앙에 버튼 배치 */
     }
+
+    .personaldata-content,
+.terms_of_use,
+.personal_info_agreement {
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+.comment {
+    border-top:dotted 1px #ddd;
+    font-size:0.7em;
+}
+
+.anchor {
+    display: block;
+    position: relative;
+    top: -15px;
+    visibility: hidden;
+}
+
+.tr-list {
+    cursor: pointer;
+}
+
+body		{
+    font-family: 'Gowun Dodum', 'NanumSquareRound', sans-serif !important;
+}
+
+.bg-light {
+    color: grey;
+}
