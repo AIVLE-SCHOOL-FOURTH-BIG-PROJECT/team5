@@ -87,3 +87,26 @@ document.addEventListener('DOMContentLoaded', function () {
     // 초기 버튼 상태 설정
     updateButtonState();
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const checkUsernameButton = document.getElementById('check-username-button');
+    const usernameInput = document.getElementById('username');
+    const usernameResult = document.getElementById('username-result');
+
+    checkUsernameButton.addEventListener('click', function () {
+        const username = usernameInput.value;
+
+        fetch(`/check_username/?username=${username}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_taken) {
+                    usernameResult.textContent = '이미 사용 중인 아이디입니다.';
+                    usernameResult.style.color = 'red';
+                } else {
+                    usernameResult.textContent = '사용 가능한 아이디입니다.';
+                    usernameResult.style.color = 'green';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+});

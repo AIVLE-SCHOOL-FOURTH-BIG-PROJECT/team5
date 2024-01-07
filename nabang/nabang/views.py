@@ -226,3 +226,10 @@ def find_user_info_pw(request):
 
 def rule(request):
     return render(request, 'rule.html')
+
+def check_username(request):
+    username = request.GET.get('username', None)
+    response = {
+        'is_taken': User.objects.filter(username=username).exists()
+    }
+    return JsonResponse(response)

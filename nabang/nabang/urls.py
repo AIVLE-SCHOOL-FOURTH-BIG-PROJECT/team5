@@ -38,6 +38,7 @@ urlpatterns = [
     path('common/', include('common.urls')),
     path('accounts/', include('allauth.urls')),
     path('rule/', views.rule, name='rule'),
+    path('check_username/', views.check_username, name='check_username'),  # 아이디 중복 확인 URL
 ]
 
 if settings.DEBUG:
