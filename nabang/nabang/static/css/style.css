@@ -477,7 +477,7 @@ body {
 
     .signup-title {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
     }
     
     .form-group {
@@ -548,4 +548,111 @@ body		{
 
 .bg-light {
     color: grey;
+}
+
+
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%; /* 너비를 100%로 설정 */
+    max-width: 800px; /* 최대 너비를 500px로 설정 */
+    margin: 0 auto; /* 자동 마진으로 가운데 정렬 */
+    padding: 20px; /* 적당한 패딩 추가 */
+}
+
+
+.signup-title {
+    text-align: center; /* 텍스트 가운데 정렬 */
+    margin-bottom: 50px; /* 제목 아래 마진 추가 */
+}
+
+.form-group {
+    display: flex; /* 플렉스 박스 모델 적용 */
+    align-items: center; /* 가로축으로 중앙 정렬 */
+    margin-bottom: 20px; /* 요소들 사이의 마진 설정 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.form-group label {
+    min-width: 150px; /* 라벨의 최소 너비 설정 */
+    margin-right: 20px; /* 라벨과 입력 필드 사이의 간격 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select {
+    flex-grow: 1; /* 남은 공간을 모두 차지하도록 설정 */
+    margin-right: 10px; /* 입력 필드와 버튼 사이의 간격 */
+}
+
+.password-status {
+    margin-top: 10px;
+}
+
+.check-username-button {
+    white-space: nowrap; /* 버튼 텍스트가 줄 바꿈 없이 한 줄에 표시되도록 설정 */
+    padding: 6px 10px; /* 버튼의 패딩 수정 */
+    font-size: 14px; /* 글자 크기 수정 */
+}
+
+.submit-button {
+    width: 100%; /* 버튼의 너비를 부모 요소의 너비에 맞게 설정 */
+    padding: 10px; /* 적당한 패딩 추가 */
+    margin-top: 20px; /* 제출 버튼 위에 마진 추가 */
+}
+
+input::placeholder {
+    text-align: left;
+  }
+
+  /* 개인정보 처리 동의 체크박스와 링크 스타일 */
+.privacy-policy-agreement {
+    display: flex;
+    align-items: center;
+}
+
+.privacy-policy-agreement label {
+    margin-left: 8px;
+    margin-right: 16px;
+}
+
+.privacy-policy-agreement a {
+    color: #0000EE; /* 링크 색상 */
+    text-decoration: underline; /* 밑줄 */
+    cursor: pointer; /* 클릭 가능한 항목임을 나타내는 커서 모양 */
+}
+
+.message {
+    height: 20px; /* 고정 높이 */
+    color: red; /* 메시지 색상 */
+    font-size: 0.8em; /* 작은 글꼴 크기 */
+    margin-top: 5px; /* 입력 필드와의 간격 */
+}
+
+/* 비밀번호 일치 여부를 위한 추가 스타일링 */
+.password-status {
+    color: green; /* 일치 시 색상 */
+}
+
+.privacy-policy-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.privacy-policy-agreement {
+    display: inline-block; /* 블록 요소를 인라인처럼 배열 */
+    text-align: center; /* 내부 요소 좌측 정렬 */
+}
+
+.privacy-policy-agreement input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.privacy-policy-agreement label {
+    margin-right: 10px;
 }
