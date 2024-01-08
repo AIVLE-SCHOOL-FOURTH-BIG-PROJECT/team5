@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 방 나방</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="{% url 'index' %}">
+            <img src="{% static 'images/logo.png' %}" alt="로고" class="logo">
+            <ul class="nav-menu">
+                <li><a href="/airecommend/">맞춤형 가구 추천</a></li>
+                <li><a href="ai-remodeling">AI 리모델링 컨설팅</a></li>
+            </ul>
+            {% if not user.is_authenticated %}
+            <div class="nav-right">
+                <a href="#" class="nav-login-link">로그인</a>
+                <a href="/signup" class="signup-button">회원가입</a>
+            </div>
+            {% else %}
+            <div class="nav-right">
+                <a class="nav-login-link" href="#">{{user}}님!</a>
+                <a class="signup-button" href="{% url 'logout' %}">로그아웃</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+</head>
+<body>
+    <div class="signup-container">
+        <h2 class="signup-title">정보 찾기</h2>
+        
+        {% block content %}
+
+        <div id="find-id" class="find-section">
+        <h3>ID 찾기</h3>
+        <form method="post" action="{% url 'find_user_info' %}">
+            {% csrf_token %}
+            <label for="email_id">이메일:</label>
+            <input type="email" id="email_id" name="email" required>
+            <button type="submit">ID 찾기</button>
+        </form>
+    </div>
+    
+    <div id="find-password" class="find-section">
+        <h3>비밀번호 찾기</h3>
+        <form method="post" action="{% url 'find_user_info_pw' %}">
+            {% csrf_token %}
+            <label for="username_pw">아이디:</label>
+            <input type="text" id="username_pw" name="username" required>
+            <label for="email_pw">이메일:</label>
+            <input type="email" id="email_pw" name="email" required>
+            <button type="submit">비밀번호 찾기</button>
+        </form>
+    </div>
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endblock %}
+    </div>
+        <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>Copyright AIVLE School Team 5. All Rights Reserved.</p>
+                <ul class="footer-links">
+                    <li><a href="/personaldata/">개인정보 처리방침</a></li>
+                    <li><a href="/terms/">이용약관</a></li>
+                    <li><a href="/contact/">문의하기</a></li>
+                </ul>
+            </div>
+            </div>
+        </div>
+        </footer>
+        <div id="login-popup" class="popup">
+            <div class="popup-content">
+                <span class="close-button">&times;</span>
+                <!-- 로그인 폼 -->
+                {% if not user.is_authenticated %}
+                <form id="login-form" method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <h1>로그인</h1>
+                    <input type="text" placeholder="아이디" name="username" required>
+                    <input type="password" placeholder="비밀번호" name="password" required>
+                    <button type="submit">로그인</button>
+                </form>
+                <!-- 소셜 로그인 버튼 -->
+                <div class="social-login">
+                    {% load socialaccount %}
+                    <a href="{% provider_login_url 'kakao' %}"><button class="social-button kakao-login">카카오톡 로그인</button></a>
+                    <a href="{% provider_login_url 'naver' %}"><button class="social-button naver-login">네이버 로그인</button></a>
+                    <a href="{% provider_login_url 'google' %}"><button class="social-button google-login">구글 로그인</button></a>
+                    <a href="#"><button class="social-button id_serch">아이디/비밀번호 찾기</button></a>
+                </div>
+                {% else %}
+                    {% block additional_content %}
+                    <h1> 내정보 </h1>
+                    <ul>
+                        <li> name : {{user}}</li>
+                        <li> email : {{user.email}}</li>
+                        <li>{{user.date_joined}}</li>
+                    </ul>
+                    <a href="{% url 'password_change' %}">[암호 변경하기]</a>
+                    <a href="{% url 'delete_account' %}">[회원탈퇴]</a>
+                    {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                     {% endif %}
+                    {% endblock %}
+                {% endif %}
+            </div>
+        </div>
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/signup.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</body>
+
+</html>

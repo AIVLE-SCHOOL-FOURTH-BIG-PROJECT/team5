@@ -1,5 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 파일 미리보기 기능
+    const fileInput = document.getElementById('file-upload');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(event) {
+            if (this.files && this.files[0]) {
+                previewFile(this.files[0]);
+                updateAnalyzeButton();
+            }
+        });
+    }
+
     function previewFile(file) {
         const preview = document.getElementById('preview-image');
         const uploadInstructions = document.getElementById('upload-instructions');
@@ -32,18 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 파일이 변경될 때마다 호출되는 이벤트 리스너
-    const fileInput = document.getElementById('file-upload');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(event) {
-            if (this.files && this.files[0]) {
-                previewFile(this.files[0]);
-                updateAnalyzeButton();
-            }
-        });
-    }
-
-    // 드래그 앤 드롭 이벤트 리스너들
     const dragDropArea = document.getElementById('drag-drop-area');
     if (dragDropArea) {
         dragDropArea.addEventListener('dragover', function(event) {
@@ -80,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (fileInput && fileInput.files.length > 0) {
                 var formData = new FormData(document.getElementById('image-upload-form'));
 
-                // 이 부분에 서버의 업로드 처리 URL을 정확하게 지정해야 합니다.
+
                 fetch('/path-to-image-upload-handler', {
                     method: 'POST',
                     credentials: 'include',
@@ -94,7 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 })
                 .then(data => {
-                    console.log(data);
+
+                    // 분석 결과에 따라 다음 페이지로 이동 또는 메시지 표시
                     if(data.result === 'success') {
                         window.location.href = '/airecommend_result';
                     } else {
@@ -110,39 +108,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 페이지 로딩 완료 후 실행될 함수
+// document.addEventListener('DOMContentLoaded', function() {
+//     // 페이지 로딩 완료 후 실행될 함수
 
-    function fetchProducts() {
-        // 서버에서 상품 데이터를 가져오는 함수
-        fetch('/api/products') // API 엔드포인트는 예시입니다.
-            .then(response => response.json())
-            .then(data => {
-                displayProducts(data.products);
-            })
-            .catch(error => console.error('Error fetching products:', error));
-    }
+//     function fetchProducts() {
+//         // 서버에서 상품 데이터를 가져오는 함수
+//         fetch('/api/products') // API 엔드포인트는 예시입니다.
+//             .then(response => response.json())
+//             .then(data => {
+//                 displayProducts(data.products);
+//             })
+//             .catch(error => console.error('Error fetching products:', error));
+//     }
 
-    function displayProducts(products) {
-        // 상품 데이터를 페이지에 표시하는 함수
-        const productRow = document.querySelector('.product-row');
-        productRow.innerHTML = ''; // 기존 상품 목록을 초기화
+//     function displayProducts(products) {
+//         // 상품 데이터를 페이지에 표시하는 함수
+//         const productRow = document.querySelector('.product-row');
+//         productRow.innerHTML = ''; // 기존 상품 목록을 초기화
 
-        products.forEach(product => {
-            const productCard = `
-                <div class="product-card">
-                    <a href="${product.purchase_link}" target="_blank" class="product-link">
-                        <div class="product-image" style="background-image: url('${product.image_url}');"></div>
-                        <div class="product-info">
-                            <h3 class="product-name">${product.name}</h3>
-                            <p class="product-price">${product.price}</p>
-                        </div>
-                    </a>
-                </div>
-            `;
-            productRow.insertAdjacentHTML('beforeend', productCard);
-        });
-    }
+//         products.forEach(product => {
+//             const productCard = `
+//                 <div class="product-card">
+//                     <a href="${product.purchase_link}" target="_blank" class="product-link">
+//                         <div class="product-image" style="background-image: url('${product.image_url}');"></div>
+//                         <div class="product-info">
+//                             <h3 class="product-name">${product.name}</h3>
+//                             <p class="product-price">${product.price}</p>
+//                         </div>
+//                     </a>
+//                 </div>
+//             `;
+//             productRow.insertAdjacentHTML('beforeend', productCard);
+//         });
+//     }
 
-    fetchProducts(); // 상품 데이터를 가져와서 페이지에 표시
-});
+//     fetchProducts(); // 상품 데이터를 가져와서 페이지에 표시
+// });

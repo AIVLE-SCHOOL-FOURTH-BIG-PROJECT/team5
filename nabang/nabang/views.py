@@ -19,12 +19,20 @@ from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+import nabang.utils.viseionAI as viseionAI
+import nabang.utils.style_classify as style_classify
+import nabang.utils.gpt_recommendation as gpt_recommendation
+import joblib, os, requests
+
+style_model = joblib.load('./nabang/utils/svm_model.joblib')
+le = joblib.load('./nabang/utils/label_encoder.joblib') # Load the LabelEncoder
 
 def index(request):
     return render(request, 'index.html')
 
 def airecommend(request):
     return render(request, 'airecommend.html')
+
 
 def file_upload(request):
     if request.method == 'POST' and request.FILES['file']:
@@ -36,6 +44,9 @@ def file_upload(request):
         # 상대 URL을 전체 URL로 변환
         full_url = request.build_absolute_uri(uploaded_file_url)
 
+        # 세션에 업로드된 이미지 URL 저장
+        request.session['uploaded_image_url'] = full_url
+
         return JsonResponse({'status': 'success', 'filename': uploaded_file.name, 'image_url': full_url})
     return JsonResponse({'status': 'error'}, status=400)
 
@@ -43,13 +54,36 @@ def image_upload_handler(request):
     if request.method == 'POST':
         try:
             image_file = request.FILES['file']
+            
+            # 탐지모델
+            objects = viseionAI.obj_detection_file(image_file.read())
+            image_file.seek(0)
+            size = objects['size'][0] * objects['size'][1]
+            style_percentage =[]
+            for obj in objects['objects']:
+                percent = viseionAI.box_percentage(size, obj['box'])
+                crop_processing = style_classify.process_image_file(obj['crop_img'])
+                crop_predict = style_model.predict(crop_processing)
+                crop_style = le.inverse_transform(crop_predict)
+                temp =[crop_style[0], percent] # 각 obj 스타일-비율
+                style_percentage.append(temp) # 순위별 style-비율
+            print(style_percentage)
+            
             num_colors = 3
-            ordered_dominant_colors, ordered_percentages = extract_ordered_dominant_colors(image_file, num_colors)
+            color_percentage = extract_ordered_dominant_colors(image_file, num_colors) # 순위별 rgb-비율
+            print('all: ',color_percentage)
+            
+            image_file.seek(0)
+            # 가구 종류 추천
+            img_path = f'./media/{image_file}'
+            reco_furniture = gpt_recommendation.analyze_room_and_recommend_furniture(img_path)
+            print('추천 가구::::::::: ',reco_furniture)
             
             # 세션에 분석 결과 저장
             request.session['analysis_result'] = {
-                'colors': ordered_dominant_colors,
-                'percentages': ordered_percentages
+                'color_percentage': color_percentage,
+                'style_percentage': style_percentage,
+                'reco_furniture': reco_furniture,
             }
 
             fs = FileSystemStorage()
@@ -61,59 +95,47 @@ def image_upload_handler(request):
             }
             # file_upload 함수에서 저장한 이미지 URL을 사용
             uploaded_file_url = request.session.get('uploaded_image_url', '')
+            
+
             return JsonResponse({'result': 'success', 'image_url': uploaded_file_url})
         except Exception as e:
             # 오류 처리
+            print("error:",e)
             return JsonResponse({'result': 'error', 'reason': str(e)}, status=500)
     else:
         return JsonResponse({'result': 'error'}, status=400)
+
 
 
 def airecommend_result(request):
     analysis_result = request.session.get('analysis_result', {})
     image_url = request.session.get('image_url', '')
     #로그 확인 부분
+    products = [
+        {'name': '상품1', 'price': '1000원', 'image_url': '#', 'purchase_link': '#'},
+        {'name': '상품2', 'price': '2000원', 'image_url': '#', 'purchase_link': '#'},
+        {'name': '상품3', 'price': '3000원', 'image_url': '#', 'purchase_link': '#'},
+        {'name': '상품4', 'price': '4000원', 'image_url': '#', 'purchase_link': '#'},
+    ]
     context = {
         'result': '분석 결과',
-        'analysis_colors': analysis_result.get('colors'),
-        'analysis_percentages': analysis_result.get('percentages'),
+        'reco_furn': analysis_result.get('reco_furniture'),
+        'color_per': analysis_result.get('color_percentage'),
+        'style_per': analysis_result.get('style_percentage'),            
         'image_url': image_url,  # 이미지 URL 추가
+        'products': products
     }
-
-    return render(request, 'airecommend_result.html', context)
-
-def your_view_function(request):
-    # 색상 분석 로직 수행
-    ordered_colors, ordered_percentages = extract_ordered_dominant_colors(image_file, num_colors)
-
-    # 색상 값을 RGB 스케일로 변환하고 색상과 비율을 결합
-    rgb_colors = [[int(r * 255), int(g * 255), int(b * 255)] for r, g, b in ordered_colors]
-    colors_and_percentages = [{'color': color, 'percentage': percentage} for color, percentage in zip(rgb_colors, ordered_percentages)]
-
-    context = {
-        'result': result,
-        'analysis_colors_and_percentages': colors_and_percentages,
-    }
-    return render(request, 'airecommend_result.html', context)
-
-@csrf_protect
-def custom_login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                # 로그인 성공 시 원하는 페이지로 리다이렉트
-                return redirect('index')
-            else:
-                messages.error(request, '로그인 실패. 아이디 또는 비밀번호를 확인하세요.')
-                return render(request, 'index', {'form': form, 'login_failed': True})
-    else:
-        form = AuthenticationForm()
-    return render(request, 'index.html', {'form': form, 'login_failed': False})
+    
+    # img_path =f"./{image_url['url']}"
+    # print(img_path)
+    # if os.path.exists(img_path):
+    #     os.remove(img_path)
+    #     print(f"파일이 삭제되었습니다: {img_path}")
+    # else:
+    #     print(f"파일을 찾을 수 없습니다: {img_path}")
+        
+    return render(request, 'airecommend_result.html', context)        
+    
 
 @csrf_protect
 def signup(request):
@@ -123,22 +145,13 @@ def signup(request):
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
-        birthdate = request.POST['birthdate']
-        gender = request.POST['gender']
-        print('birthdate:',birthdate)
-        print('gender:',gender)
+
         try:
             if password == confirm_password:
                 user = User.objects.create_user(username, email, password)
-                print('user:',user)
-                # 사용자 생성 후에 추가 필드를 설정합니다.
-                user.birthdate = birthdate
-                print('user:',user.birthdate)
-                user.gender = gender
-                print('user:',user.gender)
-                user.save()
 
-#                 # 로그인 처리 등 추가 로직
+                # 사용자 생성 후에 추가 필드를 설정합니다
+                # 로그인 처리 등 추가 로직
                 return redirect('index')  # 또는 다른 페이지로 리디렉션
             else:
                 return render(request, 'signup.html', {'error': '비밀번호가 일치하지 않습니다.'})
@@ -147,7 +160,6 @@ def signup(request):
             return render(request, 'signup.html', {'error': '이미 사용 중인 아이디입니다.'})
 
     return render(request, 'signup.html')
-
 
 def personal_data(request):
     return render(request, 'personaldata.html')
@@ -179,6 +191,30 @@ def delete_account(request):
         logout(request)  # 로그아웃
         return redirect('index')  # 삭제 후 리다이렉트할 페이지를 지정합니다.
     return render(request, 'registration/delete_account.html')
+
+# def find_user_info(request):
+#     if request.method == 'POST':
+#         email = request.POST.get('email')
+#         username = request.POST.get('username')
+
+#         # Check if the user is trying to find ID or reset password
+#         if username:
+#             # Password reset
+#             try:
+#                 user = User.objects.get(username=username, email=email)
+#                 # Perform password reset logic here if needed
+#                 return render(request, 'registration/password_reset_success.html')
+#             except ObjectDoesNotExist:
+#                 return render(request, 'registration/user_not_found.html')
+#         else:
+#             # ID retrieval
+#             try:
+#                 user = User.objects.get(email=email)
+#                 return render(request, 'registration/found_id.html', {'username': user.username})
+#             except ObjectDoesNotExist:
+#                 return render(request, 'registration/id_not_found.html')
+
+#     return render(request, 'registration/find_user_info.html')
 
 def find_user_info(request):
     if request.method == 'POST':
@@ -234,15 +270,58 @@ def check_username(request):
     }
     return JsonResponse(response)
 
-def airecommend_result(request):
-    # 테스트용 임시 상품 데이터
-    products = [
-        {'name': '상품1', 'price': '1000원', 'image_url': '#', 'purchase_link': '#'},
-        {'name': '상품2', 'price': '2000원', 'image_url': '#', 'purchase_link': '#'},
-        {'name': '상품3', 'price': '3000원', 'image_url': '#', 'purchase_link': '#'},
-        {'name': '상품4', 'price': '4000원', 'image_url': '#', 'purchase_link': '#'},
-    ]
+def kakao_login(request):
 
-    # 상품 데이터를 템플릿에 전달
-    context = {'products': products}
-    return render(request, 'airecommend_result.html', context)
+	#settings에 등록해둔 rest_api_key와 redirect_uri
+    REST_API_KEY = 'be56835380f36db1533c79bddf121f90'
+    KAKAO_REDIRECT_URI = 'http://114.205.122.111/accounts/kakao/login/callback/'
+
+	# 인가코드 가져오기
+    code = request.GET.get("code")
+
+	# token 받아오기
+    data = {'grant_type': "authorization_code", 'client_id': REST_API_KEY,
+            'redirect_uri': KAKAO_REDIRECT_URI,
+            'code': code}
+    headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
+
+    token_response = requests.post('https://kauth.kakao.com/oauth/token', data = data, headers = headers)
+    access_token = token_response.json().get('access_token')
+
+	# token 검증하기
+    headers = {"Authorization": f'Bearer {access_token}'}
+    token_validate_response = requests.get('https://kapi.kakao.com/v1/user/access_token_info', headers = headers)
+    print(token_validate_response.json())
+
+	# 사용자 정보 받아오기
+    headers = {"Authorization": f'Bearer {access_token}', 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
+    user_info_response = requests.post('https://kapi.kakao.com/v2/user/me', headers = headers)
+    print(user_info_response.json())
+
+    return render(request, 'index.html')
+
+def kakao_logout(request, access_token):
+
+    REST_API_KEY = 'be56835380f36db1533c79bddf121f90'
+    LOGOUT_REDIRECT_URI = '/../'
+
+	# 로그아웃 
+    headers = {"Authorization": f'Bearer {access_token}'}
+    logout_response = requests.post('https://kapi.kakao.com/v1/user/logout', headers=headers)
+    print(logout_response.json())
+    
+    # 카카오계정과 함께 로그아웃
+    logout_response = requests.get(f'https://kauth.kakao.com/oauth/logout?client_id=${REST_API_KEY}&logout_redirect_uri=${LOGOUT_REDIRECT_URI}')
+
+# def airecommend_result(request):
+#     # 테스트용 임시 상품 데이터
+#     products = [
+#         {'name': '상품1', 'price': '1000원', 'image_url': '#', 'purchase_link': '#'},
+#         {'name': '상품2', 'price': '2000원', 'image_url': '#', 'purchase_link': '#'},
+#         {'name': '상품3', 'price': '3000원', 'image_url': '#', 'purchase_link': '#'},
+#         {'name': '상품4', 'price': '4000원', 'image_url': '#', 'purchase_link': '#'},
+#     ]
+
+#     # 상품 데이터를 템플릿에 전달
+#     context = {'products': products}
+#     return render(request, 'airecommend_result.html', context)    

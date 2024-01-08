@@ -24,7 +24,10 @@
             {% else %}
             <div class="nav-right">
                 <a class="nav-login-link" href="#">{{user}}님!</a>
-                <a class="signup-button" href="{% url 'logout' %}">로그아웃</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="signup-button">로그아웃</button>
+                </form>
             </div>
             {% endif %}
         </div>
@@ -34,27 +37,34 @@
     <section class="ai-recommend-section">
         <h2>AI기반 맞춤형 가구 추천</h2>
         <div class="uploaded-image">
-            <img src="{{ image_url }}" alt="업로드된 이미지">
+            {% if image_url %}
+                <img id="uploaded-image" src="{{ image_url.url }}" alt="Uploaded Image">
+            {% endif %}
         </div>
     </section>
 
     <main>
-        <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
-        <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
-
         {% block content %}
         <h1>{{ result }}</h1>
-        {% if analysis_colors and analysis_percentages %}
-            <div class="colors-container">
-                {% for color in analysis_colors %}
-                <div class="color-box" style="background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
-                {% endfor %}
+        {% if color_per and style_per %}
+        <div class="colors-container">
+            {% comment %} {% for color, per in color_per %}
+            <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
+            <p style="margin-left: 10px;">비율: {{ per }}%</p>
+            {% endfor %} {% endcomment %}
+            {% for color, per in color_per %}
+                <div style="display: inline-block;">
+                    <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
+                    <p style="display: inline-block; margin-left: 10px;">비율: {{ per }}%</p>
                 </div>
+            {% endfor %}
 
-                {% for percentage in analysis_percentages %}
-                    <p>비율: {{ percentage }}%</p>
-                {% endfor %}
-            </div>
+            {% for style, per in style_per %}
+            <p>스타일: {{ style }} 비율: {{ per }}%</p>
+            {% endfor %}
+
+            <p>추천 가구: {{ reco_furn }}</p>
+        </div>
         {% else %}
             <p>분석 결과가 없습니다.</p>
         {% endif %}
@@ -84,65 +94,57 @@
             </div>
         </div>
     </main>
-
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
                 <p>Copyright AIVLE School Team 5. All Rights Reserved.</p>
                 <ul class="footer-links">
                     <li><a href="/rule/">개인정보 처리방침 및 이용약관</a></li>
-                    <li><a href="/contact/">문의하기</a></li>
+                    <li><a href="/board/">문의하기</a></li>
                 </ul>
+            </div>
             </div>
         </div>
     </footer>
     <div id="login-popup" class="popup">
         <div class="popup-content">
-            <span class="close-button">×</span> <!-- 닫기 버튼 위치 변경 -->
+            <span class="close-button">&times;</span>
+            <!-- 로그인 폼 -->
             {% if not user.is_authenticated %}
-            <h2>로그인</h2> <!-- 로그인 타이틀 추가 -->
             <form id="login-form" method="post" action="{% url 'login' %}">
                 {% csrf_token %}
-                <div class="input-container">
-                    <input type="text" placeholder="아이디 또는 이메일" required> <!-- 아이디 입력 필드 변경 -->
-                </div>
-                <div class="input-container">
-                    <input type="password" placeholder="비밀번호 입력" required> <!-- 비밀번호 입력 필드 -->
-                </div>
-                <div class="login-checkbox">
-                    <input type="checkbox" id="remember-password"> <!-- 기억하기 체크박스 -->
-                    <label for="remember-password">아이디 기억하기</label>
-                </div>
-                <button type="submit" class="login-button">로그인</button> <!-- 로그인 버튼 -->
+                <h1>로그인</h1>
+                <input type="text" placeholder="아이디" name="username" required>
+                <input type="password" placeholder="비밀번호" name="password" required>
+                <button type="submit">로그인</button>
             </form>
-            <!-- 소셜 미디어 아이콘만 표시 -->
-            <div class="social-icons">
-                <a href="#" class="social-icon"><img src="{% static 'images/kakaotalk.png' %}" alt="kakaotalk"></a>
-                <a href="#" class="social-icon"><img src="{% static 'images/naver.png' %}" alt="naver"></a>
-                <a href="#" class="social-icon"><img src="{% static 'images/google.png' %}" alt="google"></a>
-            </div>
-            <div class="signup-prompt">
-                아직 회원이 아니신가요?? <a href="/signup">회원가입</a> <!-- 회원가입 링크 -->
+            <!-- 소셜 로그인 버튼 -->
+            <div class="social-login">
+                {% load socialaccount %}
+                <a href="{% provider_login_url 'kakao' %}"><button class="social-button kakao-login">카카오톡 로그인</button></a>
+                <a href="{% provider_login_url 'naver' %}"><button class="social-button naver-login">네이버 로그인</button></a>
+                <a href="{% provider_login_url 'google' %}"><button class="social-button google-login">구글 로그인</button></a>
+                <a href="{% url 'find_user_info' %}"><button class="social-button id_serch">아이디/비밀번호 찾기</button></a>
             </div>
             {% else %}
-                    {% block additional_content %}
-                    <h1> 내정보 </h1>
-                    <ul>
-                        <li> name : {{user}}</li>
-                        <li> email : {{user.email}}</li>
-                        <li>{{user.date_joined}}</li>
-                    </ul>
-                    <a href="{% url 'password_change' %}">[암호 변경하기]</a>
-                    <a href="{% url 'delete_account' %}">[회원탈퇴]</a>
-                    {% if messages %}
-                    <ul>
-                        {% for message in messages %}
-                        <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                     {% endif %}
-                    {% endblock %}
-                {% endif %}
+                {% block additional_content %}
+                <h1> 내정보 </h1>
+                <ul>
+                    <li> name : {{user}}</li>
+                    <li> email : {{user.email}}</li>
+                    <li>{{user.date_joined}}</li>
+                </ul>
+                <a href="{% url 'password_change' %}">[암호 변경하기]</a>
+                <a href="{% url 'delete_account' %}">[회원탈퇴]</a>
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                 {% endif %}
+                {% endblock %}
+            {% endif %}
         </div>
     </div>
     <script src="{% static 'js/airecommend.js' %}"></script>

@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-hqf*sj6158$j73y(%wbf&j&w-5jx4$0vk2d--q+srdujh=zoka
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -41,15 +41,14 @@ INSTALLED_APPS = [
     "nabang",
     "board",
     "common",
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.kakao',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.naver',
+    'social_django', #
 ]
-SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -59,10 +58,15 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.common.CommonMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',  #
 ]
+
+CSRF_TRUSTED_ORIGINS = ['http://114.205.122.111',
+                        'http://localhost',
+                        ]
 
 ROOT_URLCONF = "nabang.urls"
 
@@ -81,6 +85,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 'django.template.context_processors.request',
+                'social_django.context_processors.backends',  # <-- 끝에 추가
+                'social_django.context_processors.login_redirect', # <-- 끝에 추가
             ],
         },
     },
@@ -144,12 +150,14 @@ STATIC_URL = '/static/'
 import os
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'nabang', 'static'),
+    os.path.join(BASE_DIR, 'nabang', 'templates'),
 ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 LOGIN_URL = '/../'  # 로그인이 필요한 경우 리다이렉트할 URL
 LOGOUT_URL = '/../'  # 로그아웃이 필요한 경우 리다이렉트할 URL
@@ -161,6 +169,7 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.kakao.KakaoOAuth2',  # <-- 카카오톡
 ]
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -177,7 +186,16 @@ SOCIALACCOUNT_PROVIDERS = {
             'secret':'WyB7IO56SnuDWbn9K2J5JHNG0CGHZeu2',
             'SCOPE':[],
         },
+        'AUTH_PARAMS': {
+            'redirect_uri': 'http://114.205.122.111/accounts/kakao/login/callback/'
+        },
         'SITE_ID': 1, 
+        'LOGIN_URL' : 'account_login',
+        'LOGOUT_URL' : 'account_logout',
+        'SIGNUP_URL' : 'account_signup',
+        'LOGIN_CALLBACK_URL' : 'socialaccount:kakao_login',
+        'LOGOUT_CALLBACK_URL' : 'socialaccount:kakao_logout',
+         
     },
     'google': {
         'APP': {
@@ -210,8 +228,18 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Session settings
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 또는 'django.contrib.sessions.backends.cache'
 SESSION_COOKIE_NAME = 'nabang_cookie'
 SESSION_COOKIE_AGE = 1209600  # 세션의 유효 기간(초 단위), 2주
 SESSION_SAVE_EVERY_REQUEST = True
+
+
+# social-auth-app-django
+SOCIAL_AUTH_KAKAO_KEY = 'be56835380f36db1533c79bddf121f90'  # Client ID
+SOCIAL_AUTH_KAKAO_SECRET = 'WyB7IO56SnuDWbn9K2J5JHNG0CGHZeu2'  # Secret
+SOCIAL_AUTH_KAKAO_REDIRECT_URI = 'http://114.205.122.111/accounts/kakao/login/callback/'  # Redirect URI
+SOCIAL_AUTH_KAKAO_SCOPE = []  # Scope

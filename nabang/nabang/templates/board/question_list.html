@@ -5,6 +5,11 @@
 {% load board_filter %}
 
 {% block content %}
+<style>
+    main {
+        padding-top: 70px; /* 네비게이션 바 높이보다 더 큰 값으로 설정 */
+    }
+</style>
 <main>
     <div class="container-sm p-2 user-select-none">
 
@@ -83,7 +88,7 @@
         </div>
 
         <!-- 페이징처리 시작 -->
-        <nav aria-label="Page navigation example">
+        <div class="pagination-container" aria-label="Page navigation example">
             <ul class="pagination justify-content-center user-select-none">
                 <!-- 이전페이지 -->
                 {% if question_list.has_previous %}
@@ -126,7 +131,7 @@
                 </li>
                 {% endif %}
             </ul>
-        </nav>
+        </div>
         <!-- 페이징처리 끝 -->
     </div>
 </main>
