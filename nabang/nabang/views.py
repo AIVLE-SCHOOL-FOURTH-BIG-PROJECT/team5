@@ -11,15 +11,14 @@ import nabang.utils.style_classify as style_classify
 import nabang.utils.gpt_recommendation as gpt_recommendation
 import joblib, os
 
-style_model = joblib.load('./nabang/utils/svm_model.joblib')
-le = joblib.load('./nabang/utils/label_encoder.joblib') # Load the LabelEncoder
+style_model = joblib.load('./nabang/utils/model/RFC.joblib')
+le = joblib.load('./nabang/utils/model/label_encoder_r.joblib') # Load the LabelEncoder
 
 def index(request):
     return render(request, 'index.html')
 
 def airecommend(request):
     return render(request, 'airecommend.html')
-
 
 def file_upload(request):
     if request.method == 'POST' and request.FILES['file']:
@@ -82,7 +81,6 @@ def image_upload_handler(request):
             }
             # file_upload 함수에서 저장한 이미지 URL을 사용
             uploaded_file_url = request.session.get('uploaded_image_url', '')
-            
 
             return JsonResponse({'result': 'success', 'image_url': uploaded_file_url})
         except Exception as e:
