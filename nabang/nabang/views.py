@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .utils.color_extraction import extract_ordered_dominant_colors 
 from django.conf import settings

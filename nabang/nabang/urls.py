@@ -28,7 +28,6 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('personaldata/', views.personal_data, name='personal_data'),
     path('terms/', views.terms_of_service, name='terms_of_service'),
-    path('check_username/', check_username, name='check_username'),
     path("password_change/", views.MyPasswordChangeView.as_view(), name="password_change"),
     path("password_change/done/",auth_views.PasswordChangeDoneView.as_view(),name="password_change_done",),
     path('delete_account/', delete_account, name='delete_account'),

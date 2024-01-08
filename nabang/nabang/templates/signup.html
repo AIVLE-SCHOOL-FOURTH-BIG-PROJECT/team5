@@ -99,27 +99,35 @@
             </div>
         </div>
     </footer>
-        <div id="login-popup" class="popup">
-            <div class="popup-content">
-                <span class="close-button">&times;</span>
-                <!-- 로그인 폼 -->
-                {% if not user.is_authenticated %}
-                <form id="login-form" method="post" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    <h1>로그인</h1>
-                    <input type="text" placeholder="아이디" name="username" required>
-                    <input type="password" placeholder="비밀번호" name="password" required>
-                    <button type="submit">로그인</button>
-                </form>
-                <!-- 소셜 로그인 버튼 -->
-                <div class="social-login">
-                    {% load socialaccount %}
-                    <a href="{% provider_login_url 'kakao' %}"><button class="social-button kakao-login">카카오톡 로그인</button></a>
-                    <a href="{% provider_login_url 'naver' %}"><button class="social-button naver-login">네이버 로그인</button></a>
-                    <a href="{% provider_login_url 'google' %}"><button class="social-button google-login">구글 로그인</button></a>
-                    <a href="#"><button class="social-button id_serch">아이디/비밀번호 찾기</button></a>
+    <div id="login-popup" class="popup">
+        <div class="popup-content">
+            <span class="close-button">×</span> <!-- 닫기 버튼 위치 변경 -->
+            {% if not user.is_authenticated %}
+            <h2>로그인</h2> <!-- 로그인 타이틀 추가 -->
+            <form id="login-form" method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="input-container">
+                    <input type="text" placeholder="아이디 또는 이메일" required> <!-- 아이디 입력 필드 변경 -->
                 </div>
-                {% else %}
+                <div class="input-container">
+                    <input type="password" placeholder="비밀번호 입력" required> <!-- 비밀번호 입력 필드 -->
+                </div>
+                <div class="login-checkbox">
+                    <input type="checkbox" id="remember-password"> <!-- 기억하기 체크박스 -->
+                    <label for="remember-password">아이디 기억하기</label>
+                </div>
+                <button type="submit" class="login-button">로그인</button> <!-- 로그인 버튼 -->
+            </form>
+            <!-- 소셜 미디어 아이콘만 표시 -->
+            <div class="social-icons">
+                <a href="#" class="social-icon"><img src="{% static 'images/kakaotalk.png' %}" alt="kakaotalk"></a>
+                <a href="#" class="social-icon"><img src="{% static 'images/naver.png' %}" alt="naver"></a>
+                <a href="#" class="social-icon"><img src="{% static 'images/google.png' %}" alt="google"></a>
+            </div>
+            <div class="signup-prompt">
+                아직 회원이 아니신가요?? <a href="/signup">회원가입</a> <!-- 회원가입 링크 -->
+            </div>
+            {% else %}
                     {% block content %}
                     <h1> 내정보 </h1>
                     <ul>
@@ -138,8 +146,8 @@
                      {% endif %}
                     {% endblock %}
                 {% endif %}
-            </div>
         </div>
+    </div>
     <script src="{% static 'js/common.js' %}"></script>
     <script src="{% static 'js/signup.js' %}"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
