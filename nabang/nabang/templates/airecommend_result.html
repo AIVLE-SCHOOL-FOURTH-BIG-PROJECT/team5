@@ -41,8 +41,6 @@
 
     <main>
         <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
-        <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
-
         {% block content %}
         <h1>{{ result }}</h1>
         {% if color_per and style_per %}
@@ -61,6 +59,8 @@
             {% for style, per in style_per %}
             <p>스타일: {{ style }} 비율: {{ per }}%</p>
             {% endfor %}
+
+            <p>추천 가구: {{ reco_furn }}</p>
         </div>
 
         {% else %}

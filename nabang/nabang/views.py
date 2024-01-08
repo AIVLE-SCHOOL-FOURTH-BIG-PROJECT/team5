@@ -8,8 +8,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.files.storage import FileSystemStorage
 import nabang.utils.viseionAI as viseionAI
 import nabang.utils.style_classify as style_classify
-import joblib
-
+import nabang.utils.gpt_recommendation as gpt_recommendation
+import joblib, os
 
 style_model = joblib.load('./nabang/utils/svm_model.joblib')
 le = joblib.load('./nabang/utils/label_encoder.joblib') # Load the LabelEncoder
@@ -59,12 +59,18 @@ def image_upload_handler(request):
             num_colors = 3
             color_percentage = extract_ordered_dominant_colors(image_file, num_colors) # 순위별 rgb-비율
             print('all: ',color_percentage)
+            
+            image_file.seek(0)
+            # 가구 종류 추천
+            img_path = f'./media/{image_file}'
+            reco_furniture = gpt_recommendation.analyze_room_and_recommend_furniture(img_path)
+            print('추천 가구::::::::: ',reco_furniture)
+            
             # 세션에 분석 결과 저장
             request.session['analysis_result'] = {
-                # 'colors': ordered_dominant_colors,
-                # 'percentages': ordered_percentages,
                 'color_percentage': color_percentage,
                 'style_percentage': style_percentage,
+                'reco_furniture': reco_furniture,
             }
 
             fs = FileSystemStorage()
@@ -76,6 +82,8 @@ def image_upload_handler(request):
             }
             # file_upload 함수에서 저장한 이미지 URL을 사용
             uploaded_file_url = request.session.get('uploaded_image_url', '')
+            
+
             return JsonResponse({'result': 'success', 'image_url': uploaded_file_url})
         except Exception as e:
             # 오류 처리
@@ -91,14 +99,22 @@ def airecommend_result(request):
     #로그 확인 부분
     context = {
         'result': '분석 결과',
-        # 'analysis_colors': analysis_result.get('colors'),
-        # 'analysis_percentages': analysis_result.get('percentages'),
+        'reco_furn': analysis_result.get('reco_furniture'),
         'color_per': analysis_result.get('color_percentage'),
         'style_per': analysis_result.get('style_percentage'),            
         'image_url': image_url,  # 이미지 URL 추가
     }
-
-    return render(request, 'airecommend_result.html', context)
+    
+    # img_path =f"./{image_url['url']}"
+    # print(img_path)
+    # if os.path.exists(img_path):
+    #     os.remove(img_path)
+    #     print(f"파일이 삭제되었습니다: {img_path}")
+    # else:
+    #     print(f"파일을 찾을 수 없습니다: {img_path}")
+        
+    return render(request, 'airecommend_result.html', context)        
+    
 
 @csrf_protect
 def custom_login(request):
