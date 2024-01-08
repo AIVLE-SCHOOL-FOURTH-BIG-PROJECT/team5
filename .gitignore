@@ -3,4 +3,4 @@ Style_Classification/CLIP/pt_files/*
 Style_Classification/Gemini/Sangmin_google_api.txt
 Style_Classification/Con2D_traditional/*.npy
 db.sqlite3
-nabang\nabang\utils\gptKey.txt
+nabang/nabang/utils/gptKey.txt
