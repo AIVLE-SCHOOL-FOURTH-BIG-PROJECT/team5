@@ -233,3 +233,16 @@ def check_username(request):
         'is_taken': User.objects.filter(username=username).exists()
     }
     return JsonResponse(response)
+
+def airecommend_result(request):
+    # 테스트용 임시 상품 데이터
+    products = [
+        {'name': '상품1', 'price': '1000원', 'image_url': '#', 'purchase_link': '#'},
+        {'name': '상품2', 'price': '2000원', 'image_url': '#', 'purchase_link': '#'},
+        {'name': '상품3', 'price': '3000원', 'image_url': '#', 'purchase_link': '#'},
+        {'name': '상품4', 'price': '4000원', 'image_url': '#', 'purchase_link': '#'},
+    ]
+
+    # 상품 데이터를 템플릿에 전달
+    context = {'products': products}
+    return render(request, 'airecommend_result.html', context)

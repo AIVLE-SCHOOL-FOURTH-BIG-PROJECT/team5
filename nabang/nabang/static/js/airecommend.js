@@ -109,3 +109,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 페이지 로딩 완료 후 실행될 함수
+
+    function fetchProducts() {
+        // 서버에서 상품 데이터를 가져오는 함수
+        fetch('/api/products') // API 엔드포인트는 예시입니다.
+            .then(response => response.json())
+            .then(data => {
+                displayProducts(data.products);
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    }
+
+    function displayProducts(products) {
+        // 상품 데이터를 페이지에 표시하는 함수
+        const productRow = document.querySelector('.product-row');
+        productRow.innerHTML = ''; // 기존 상품 목록을 초기화
+
+        products.forEach(product => {
+            const productCard = `
+                <div class="product-card">
+                    <a href="${product.purchase_link}" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('${product.image_url}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">${product.name}</h3>
+                            <p class="product-price">${product.price}</p>
+                        </div>
+                    </a>
+                </div>
+            `;
+            productRow.insertAdjacentHTML('beforeend', productCard);
+        });
+    }
+
+    fetchProducts(); // 상품 데이터를 가져와서 페이지에 표시
+});

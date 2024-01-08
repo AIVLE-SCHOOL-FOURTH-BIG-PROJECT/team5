@@ -690,3 +690,63 @@ input::placeholder {
 .privacy-policy-agreement label {
     margin-right: 10px;
 }
+
+.product-list-container {
+    padding: 20px;
+}
+
+.product-list-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+.product-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* 중앙 정렬 */
+    gap: 20px; /* 카드 사이의 간격 */
+}
+
+.product-card {
+    flex: 0 0 auto; /* 카드의 크기를 고정값에 맞춤 */
+    margin: 10px; /* 카드 주위의 마진 */
+    width: 280px; /* 카드의 너비 */
+    height: 330px; /* 카드의 높이 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 그림자 효과 */
+    text-align: center;
+    background-color: #fff;
+}
+
+.product-link {
+    display: flex;
+    flex-direction: column; /* 세로 방향 정렬 */
+    justify-content: flex-start; /* 상단 정렬 */
+    align-items: center; /* 가운데 정렬 */
+    height: 100%; /* 링크의 높이를 카드 높이에 맞춤 */
+    text-decoration: none; /* 밑줄 제거 */
+    color: inherit; /* 상속된 색상 사용 */
+}
+
+.product-image {
+    width: 100%; /* 컨테이너의 전체 너비를 차지하도록 설정 */
+    height: 300px; /* 컨테이너의 높이 설정 */
+    background-size: contain; /* 이미지가 컨테이너를 넘어서지 않도록 설정 */
+    background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+    background-position: center center; /* 이미지가 컨테이너 중앙에 위치하도록 설정 */
+    background-color: #fff; /* 이미지가 작을 경우 나타나는 배경 색상 설정 */
+}
+.product-info {
+    padding: 10px;
+    width: 100%;
+}
+
+.product-name {
+    font-size: 1em;
+    margin: 5px 0; /* 상품명 위아래 여백 */
+}
+
+.product-price {
+    font-size: 0.8em;
+    color: #555;
+}

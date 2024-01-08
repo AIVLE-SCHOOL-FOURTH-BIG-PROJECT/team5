@@ -61,6 +61,28 @@
 
         {% endblock %}
         
+        <div class="product-list-container">
+            <h2 class="product-list-title">추천 가구</h2>
+            <div class="product-row">
+                {% for product in products %}
+                <div class="product-card">
+                    <a href="{{ product.purchase_link }}" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구1.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <p class="product-price">{{ product.price }}</p>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="prev-page">이전</button>
+                <span class="page-number">1</span>
+                <button class="next-page">다음</button>
+            </div>
+        </div>
     </main>
 
     <footer class="site-footer">
