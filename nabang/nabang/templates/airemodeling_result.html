@@ -46,53 +46,14 @@
     <main>
         {% block content %}
         <h1>{{ result }}</h1>
-        {% if color_per and style_per %}
+        {% if cho_st %}
         <div class="colors-container">
-            {% comment %} {% for color, per in color_per %}
-            <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
-            <p style="margin-left: 10px;">비율: {{ per }}%</p>
-            {% endfor %} {% endcomment %}
-            {% for color, per in color_per %}
-                <div style="display: inline-block;">
-                    <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
-                    <p style="display: inline-block; margin-left: 10px;">비율: {{ per }}%</p>
-                </div>
-            {% endfor %}
-
-            {% for style, per in style_per %}
-            <p>스타일: {{ style }} 비율: {{ per }}%</p>
-            {% endfor %}
-
-            <p>추천 가구: {{ reco_furn }}</p>
+            <p>선택한 스타일: {{ cho_st }}</p>
         </div>
         {% else %}
             <p>분석 결과가 없습니다.</p>
-        {% endif %}
-
         {% endblock %}
         
-        <div class="product-list-container">
-            <h2 class="product-list-title">추천 가구</h2>
-            <div class="product-row">
-                {% for product in products %}
-                <div class="product-card">
-                    <a href="{{ product.purchase_link }}" target="_blank" class="product-link">
-                        <div class="product-image" style="background-image: url('{% static 'images/가구1.jpg' %}');"></div>
-                        <div class="product-info">
-                            <h3 class="product-name">{{ product.name }}</h3>
-                            <p class="product-price">{{ product.price }}</p>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-            <!-- Pagination -->
-            <div class="pagination">
-                <button class="prev-page">이전</button>
-                <span class="page-number">1</span>
-                <button class="next-page">다음</button>
-            </div>
-        </div>
     </main>
     <footer class="site-footer">
         <div class="container">

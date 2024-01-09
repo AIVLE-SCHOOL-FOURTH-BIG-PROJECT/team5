@@ -48,10 +48,11 @@
         <h1>{{ result }}</h1>
         {% if color_per and style_per %}
         <div class="colors-container">
-            {% comment %} {% for color, per in color_per %}
+            {% for color, per in color_per %}
             <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
             <p style="margin-left: 10px;">비율: {{ per }}%</p>
-            {% endfor %} {% endcomment %}
+            {% endfor %}
+            
             {% for color, per in color_per %}
                 <div style="display: inline-block;">
                     <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
