@@ -42,6 +42,8 @@ urlpatterns = [
     path('login/kakao/', social_views.auth, name='kakao-login', kwargs={'backend': 'kakao'}),  # 
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('accounts/kakao/login/callback/', views.kakao_login, name='custom_kakao'), # custom kakaotalk loginL
+    path('airemodeling/', views.airemodeling, name='airemodeling'),
+    path('airemodeling_result/', views.airemodeling_result, name='airemodeling_result'),
 ]
 
 if settings.DEBUG:

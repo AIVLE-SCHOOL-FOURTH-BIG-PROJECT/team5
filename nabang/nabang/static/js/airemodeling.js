@@ -35,12 +35,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // 분석 버튼 상태 업데이트 기능
     function updateAnalyzeButton() {
         const fileInput = document.getElementById('file-upload');
+        const styleOptions = document.querySelector('input[name="style"]:checked');
         const analyzeButton = document.getElementById('analyze-button');
         if (fileInput && analyzeButton) {
-            analyzeButton.disabled = !fileInput.files.length;
+            analyzeButton.disabled = !(fileInput.files.length && styleOptions);
         }
     }
 
+    document.querySelectorAll('input[name="style"]').forEach(function(radio) {
+        radio.addEventListener('change', updateAnalyzeButton);
+    });
+    
+    // Update the button state when the file is selected
+    document.getElementById('file-upload').addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            previewFile(this.files[0]);
+        }
+        updateAnalyzeButton();
+    });
+
+   
 
     const dragDropArea = document.getElementById('drag-drop-area');
     if (dragDropArea) {
@@ -95,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // 분석 결과에 따라 다음 페이지로 이동 또는 메시지 표시
                     if(data.result === 'success') {
-                        window.location.href = '/airecommend_result';
+                        window.location.href = '/airemodeling_result';
                     } else {
                         alert('업로드에 실패했습니다.');
                     }
@@ -108,40 +122,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// document.addEventListener('DOMContentLoaded', function() {
-//     // 페이지 로딩 완료 후 실행될 함수
-
-//     function fetchProducts() {
-//         // 서버에서 상품 데이터를 가져오는 함수
-//         fetch('/api/products') // API 엔드포인트는 예시입니다.
-//             .then(response => response.json())
-//             .then(data => {
-//                 displayProducts(data.products);
-//             })
-//             .catch(error => console.error('Error fetching products:', error));
-//     }
-
-//     function displayProducts(products) {
-//         // 상품 데이터를 페이지에 표시하는 함수
-//         const productRow = document.querySelector('.product-row');
-//         productRow.innerHTML = ''; // 기존 상품 목록을 초기화
-
-//         products.forEach(product => {
-//             const productCard = `
-//                 <div class="product-card">
-//                     <a href="${product.purchase_link}" target="_blank" class="product-link">
-//                         <div class="product-image" style="background-image: url('${product.image_url}');"></div>
-//                         <div class="product-info">
-//                             <h3 class="product-name">${product.name}</h3>
-//                             <p class="product-price">${product.price}</p>
-//                         </div>
-//                     </a>
-//                 </div>
-//             `;
-//             productRow.insertAdjacentHTML('beforeend', productCard);
-//         });
-//     }
-
-//     fetchProducts(); // 상품 데이터를 가져와서 페이지에 표시
-// });

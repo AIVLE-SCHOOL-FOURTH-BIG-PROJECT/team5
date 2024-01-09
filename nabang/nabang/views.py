@@ -313,15 +313,8 @@ def kakao_logout(request, access_token):
     # 카카오계정과 함께 로그아웃
     logout_response = requests.get(f'https://kauth.kakao.com/oauth/logout?client_id=${REST_API_KEY}&logout_redirect_uri=${LOGOUT_REDIRECT_URI}')
 
-# def airecommend_result(request):
-#     # 테스트용 임시 상품 데이터
-#     products = [
-#         {'name': '상품1', 'price': '1000원', 'image_url': '#', 'purchase_link': '#'},
-#         {'name': '상품2', 'price': '2000원', 'image_url': '#', 'purchase_link': '#'},
-#         {'name': '상품3', 'price': '3000원', 'image_url': '#', 'purchase_link': '#'},
-#         {'name': '상품4', 'price': '4000원', 'image_url': '#', 'purchase_link': '#'},
-#     ]
+def airemodeling(request):
+    return render(request, 'airemodeling.html')
 
-#     # 상품 데이터를 템플릿에 전달
-#     context = {'products': products}
-#     return render(request, 'airecommend_result.html', context)    
+def airemodeling_result(request):
+    return render(request, 'airemodeling_result.html')
