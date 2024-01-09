@@ -57,11 +57,12 @@ def image_change_handler(request):
             
             selected_style = request.POST.get('style')
             print(selected_style)
-           
+            rkwk = 6
             
             # 세션에 분석 결과 저장
-            request.session['analysis_result'] = {
+            request.session['analysis_result2'] = {
                 'cho_st': selected_style,
+                'Rkwk': rkwk,
             }
             
             fs = FileSystemStorage()
@@ -81,23 +82,11 @@ def image_change_handler(request):
     else:
         return JsonResponse({'result': 'error'}, status=400)
 
-def airemodeling_result(request):
-    analysis_result = request.session.get('analysis_result', {})
-    image_url = request.session.get('image_url', '')
-    
-    context = {
-        'result': '리모델링 결과',
-        'cho_st': analysis_result.get('cho_st'),          
-        'image_url': image_url,  # 이미지 URL 추가
-    }
-        
-    return render(request, 'airemodeling_result.html', context)  
-
 def image_upload_handler(request):
     if request.method == 'POST':
         try:
             image_file = request.FILES['file']
-            
+
             # 탐지모델
             objects = viseionAI.obj_detection_file(image_file.read())
             image_file.seek(0)
@@ -119,14 +108,14 @@ def image_upload_handler(request):
             image_file.seek(0)
             # 가구 종류 추천
             img_path = f'./media/{image_file}'
-            reco_furniture = gpt_recommendation.analyze_room_and_recommend_furniture(img_path)
-            print('추천 가구::::::::: ',reco_furniture)
+            # reco_furniture = gpt_recommendation.analyze_room_and_recommend_furniture(img_path)
+            # print('추천 가구::::::::: ',reco_furniture)
             
             # 세션에 분석 결과 저장
             request.session['analysis_result'] = {
                 'color_percentage': color_percentage,
                 'style_percentage': style_percentage,
-                'reco_furniture': reco_furniture,
+                # 'reco_furniture': reco_furniture,
             }
             
             fs = FileSystemStorage()
@@ -148,7 +137,22 @@ def image_upload_handler(request):
     else:
         return JsonResponse({'result': 'error'}, status=400)
 
-
+def airemodeling_result(request):
+    analysis_result2 = request.session.get('analysis_result2', {})
+    image_url = request.session.get('image_url', '')
+    
+    context = {
+        'result': '리모델링 결과',
+        'cho_style': analysis_result2.get('cho_st'),
+        'rkwk' : analysis_result2.get('Rkwk'),          
+        'image_url': image_url,  # 이미지 URL 추가
+    }
+    print(context['result'])    
+    print(context['cho_style'])    
+    print(context['rkwk'])    
+    print(context['image_url'])    
+    
+    return render(request, 'airemodeling_result.html', context)  
 
 def airecommend_result(request):
     analysis_result = request.session.get('analysis_result', {})
@@ -162,20 +166,16 @@ def airecommend_result(request):
     ]
     context = {
         'result': '분석 결과',
-        'reco_furn': analysis_result.get('reco_furniture'),
+        # 'reco_furn': analysis_result.get('reco_furniture'),
         'color_per': analysis_result.get('color_percentage'),
         'style_per': analysis_result.get('style_percentage'),            
         'image_url': image_url,  # 이미지 URL 추가
         'products': products
     }
-    
-    # img_path =f"./{image_url['url']}"
-    # print(img_path)
-    # if os.path.exists(img_path):
-    #     os.remove(img_path)
-    #     print(f"파일이 삭제되었습니다: {img_path}")
-    # else:
-    #     print(f"파일을 찾을 수 없습니다: {img_path}")
+    print(context['result'])
+    print(context['color_per'])    
+    print(context['style_per'])    
+    print(context['image_url'])    
         
     return render(request, 'airecommend_result.html', context)        
     

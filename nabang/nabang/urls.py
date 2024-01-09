@@ -17,10 +17,13 @@ def index(request):
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('airecommend/', views.airecommend, name='airecommend'),
     path('file-upload/', views.file_upload, name='file_upload'),
-    path('path-to-image-upload-handler', views.image_upload_handler, name='image-upload-handler'),
+    path('airecommend/', views.airecommend, name='airecommend'),
+    path('airemodeling/', views.airemodeling, name='airemodeling'),
     path('airecommend_result', views.airecommend_result, name='airecommend_result'),
+    path('airemodeling_result/', views.airemodeling_result, name='airemodeling_result'),
+    path('path-to-image-upload-handler', views.image_upload_handler, name='image-upload-handler'),
+    path('path-to-image_change_handler', views.image_change_handler, name='image_change_handler'),
     path('signup/', views.signup, name='signup'),
     path('login/', LoginView.as_view(), name='login'),
     path("logout/", LogoutView.as_view(), name="logout"),
@@ -42,8 +45,7 @@ urlpatterns = [
     path('login/kakao/', social_views.auth, name='kakao-login', kwargs={'backend': 'kakao'}),  # 
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('accounts/kakao/login/callback/', views.kakao_login, name='custom_kakao'), # custom kakaotalk loginL
-    path('airemodeling/', views.airemodeling, name='airemodeling'),
-    path('airemodeling_result/', views.airemodeling_result, name='airemodeling_result'),
+    
 ]
 
 if settings.DEBUG:

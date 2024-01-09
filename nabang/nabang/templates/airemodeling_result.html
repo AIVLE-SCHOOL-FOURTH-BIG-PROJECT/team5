@@ -40,20 +40,22 @@
             {% if image_url %}
                 <img id="uploaded-image" src="{{ image_url.url }}" alt="Uploaded Image">
             {% endif %}
+                <p>사진이 없스무니다</p>
         </div>
     </section>
 
     <main>
         {% block content %}
         <h1>{{ result }}</h1>
-        {% if cho_st %}
-        <div class="colors-container">
-            <p>선택한 스타일: {{ cho_st }}</p>
-        </div>
+        {% if cho_style %}
+        <p>선택한 스타일: {{ cho_style }}</p>
+        <!-- <div class="colors-container">
+            <p>선택한 스타일: {{ cho_style }}</p>
+        </div> -->
         {% else %}
             <p>분석 결과가 없습니다.</p>
+        {% endif %}
         {% endblock %}
-        
     </main>
     <footer class="site-footer">
         <div class="container">
