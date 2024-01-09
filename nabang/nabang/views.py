@@ -61,15 +61,15 @@ def image_upload_handler(request):
             
             image_file.seek(0)
             # 가구 종류 추천
-            img_path = f'./media/{image_file}'
-            reco_furniture = gpt_recommendation.analyze_room_and_recommend_furniture(img_path)
-            print('추천 가구::::::::: ',reco_furniture)
+            # img_path = f'./media/{image_file}'
+            # reco_furniture = gpt_recommendation.analyze_room_and_recommend_furniture(img_path)
+            # print('추천 가구::::::::: ',reco_furniture)
             
             # 세션에 분석 결과 저장
             request.session['analysis_result'] = {
                 'color_percentage': color_percentage,
                 'style_percentage': style_percentage,
-                'reco_furniture': reco_furniture,
+                # 'reco_furniture': reco_furniture,
             }
 
             fs = FileSystemStorage()
@@ -84,7 +84,7 @@ def image_upload_handler(request):
 
             return JsonResponse({'result': 'success', 'image_url': uploaded_file_url})
         except Exception as e:
-            # 오류 처리
+            print('에러:', e)
             return JsonResponse({'result': 'error', 'reason': str(e)}, status=500)
     else:
         return JsonResponse({'result': 'error'}, status=400)
@@ -97,7 +97,7 @@ def airecommend_result(request):
     #로그 확인 부분
     context = {
         'result': '분석 결과',
-        'reco_furn': analysis_result.get('reco_furniture'),
+        # 'reco_furn': analysis_result.get('reco_furniture'),
         'color_per': analysis_result.get('color_percentage'),
         'style_per': analysis_result.get('style_percentage'),            
         'image_url': image_url,  # 이미지 URL 추가

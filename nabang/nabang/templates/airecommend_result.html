@@ -7,6 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>맞춤형 가구 추천</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <nav class="nav-container">
         <div class="nav-content">
@@ -44,24 +46,51 @@
         {% block content %}
         <h1>{{ result }}</h1>
         {% if color_per and style_per %}
-        <div class="colors-container">
-            {% comment %} {% for color, per in color_per %}
+        <div class="colors-container" data-style-per="{{ color_per }}">
+            <!-- {% for color, per in color_per %}
             <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
             <p style="margin-left: 10px;">비율: {{ per }}%</p>
-            {% endfor %} {% endcomment %}
-            {% for color, per in color_per %}
-                <div style="display: inline-block;">
-                    <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
-                    <p style="display: inline-block; margin-left: 10px;">비율: {{ per }}%</p>
-                </div>
-            {% endfor %}
+            {% endfor %}  -->
+
+            <!-- 원형 그래프를 표시할 캔버스 요소 추가 -->
+            <canvas id="colorChart" width="100" height="100"></canvas>
 
             {% for style, per in style_per %}
             <p>스타일: {{ style }} 비율: {{ per }}%</p>
             {% endfor %}
 
-            <p>추천 가구: {{ reco_furn }}</p>
+            <!-- <p>추천 가구: {{ reco_furn }}</p> -->
         </div>
+        <script>
+            var ctx = document.getElementById('colorChart').getContext('2d');
+            var myDoughnutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [10, 20, 30], // 데이터
+                        backgroundColor: ['red', 'blue', 'green'], // 색상
+                    }],
+                    labels: ['데이터1', '데이터2', '데이터3'] // 라벨
+                },
+                options: {
+                    plugins: {
+                        datalabels: {
+                            color: '#fff', // 라벨의 색상
+                            textAlign: 'center', // 텍스트 정렬
+                            font: {
+                                weight: 'bold', // 폰트 굵기
+                                // 추가 폰트 스타일 설정 가능
+                            },
+                            formatter: (value, ctx) => {
+                                return ctx.chart.data.labels[ctx.dataIndex];
+                                // 여기서는 라벨 텍스트를 반환합니다
+                            }
+                        }
+                    },
+                    // 다른 차트 옵션들...
+                }
+            });
+        </script>
 
         {% else %}
             <p>분석 결과가 없습니다.</p>
