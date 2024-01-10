@@ -232,6 +232,13 @@ body {
     text-decoration: none; /* 기본 밑줄 제거 */
 }
 
+.airemodeling-page .nav-menu a[href="/airemodeling/"] {
+    font-weight: bold; /* 굵은 글씨 */
+    padding-bottom: 2px; /* 밑줄과의 간격 */
+    border-bottom: 2px solid currentColor; /* 현재 글자 색상의 2px 밑줄 */
+    text-decoration: none; /* 기본 밑줄 제거 */
+}
+
 .ai-recommend-section {
     text-align: center; /* 섹션 내용 중앙 정렬 */
     padding: 30px; /* 패딩 추가 */
@@ -415,14 +422,6 @@ body {
     margin-top: 20px; /* 회원가입 링크 간격 */
 }
 
-.main-title {
-    font-size: 32px; /* 기본 크기 */
-    margin-bottom: 10px; /* 아래 요소와의 마진 */
-    color: #333;
-    text-align: left; /* 좌측 정렬 */
-    padding-left: 15px; /* 좌측 패딩 */
-}
-
 .tip-content {
     display: flex;
     align-items: flex-start; /* 상단 정렬 */
@@ -434,12 +433,24 @@ body {
 
 .tip-text {
     flex: 1;
-    text-align: left; /* 텍스트 좌측 정렬 */
+    text-align: left;
+    position: relative; /* 상대 위치 지정 */
+}
+
+.main-title {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: left;
+    position: absolute; /* 절대 위치 지정 */
+    top: -40px; /* "Tip!"을 위로 올립니다. 이 값을 조정해 배치를 맞춰주세요 */
+    left: 0; /* 왼쪽 정렬 유지 */
 }
 
 .tip-text h3 {
     font-size: 24px;
-    margin-bottom: 10px;
+    margin-top: 50px; /* "Tip!" 제목 아래로 공간을 만들어주세요 */
+    /* 기타 스타일 */
 }
 
 .tip-text p {
@@ -656,7 +667,7 @@ input::placeholder {
 }
 
 .privacy-policy-agreement a {
-    color: #0000EE; /* 링크 색상 */
+    color: blue; /* 링크 색상 */
     text-decoration: underline; /* 밑줄 */
     cursor: pointer; /* 클릭 가능한 항목임을 나타내는 커서 모양 */
 }
@@ -755,10 +766,34 @@ input::placeholder {
     display: inline-block;
     width: 20px; /* 샘플 사각형의 너비 */
     height: 20px; /* 샘플 사각형의 높이 */
-    border: 1px solid #000; /* 테두리 추가 */
+    border: 1px solid #27282A; /* 테두리 추가 */
     margin-right: 5px; /* 라벨과의 간격 */
 }
 
 .color-value {
     vertical-align: middle; /* 샘플 사각형과 텍스트 정렬 */
+}
+
+.style-options {
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+    flex-wrap: wrap; /* 버튼들이 여러 줄이 필요할 경우를 대비해 줄바꿈 허용 */
+    gap: 10px; /* 버튼 사이의 간격을 조절하고 싶으면 이 값을 조정하세요 */
+    margin-top: 20px; /* 필요에 따라 조절하세요 */
+}
+
+/* 기존의 btn-info 스타일을 오버라이드 */
+.btn-info {
+    background-color: #27282A; /* 새 배경색으로 변경 */
+    border-color: #27282A; /* 버튼 경계선 색상을 설정하고 싶다면 추가하세요 */
+}
+
+/* btn 클래스에 대한 글자색 변경 */
+.btn {
+    color: #FFF; /* 새 글자색으로 변경 */
+}
+
+.btn-primary {
+    background-color: #27282A; /* 새 배경색으로 변경 */
+    border-color: #27282A; /* 버튼 경계선 색상도 변경 */
 }
