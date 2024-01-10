@@ -92,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (fileInput2 && fileInput2.files.length > 0) {
                 var formData2 = new FormData(document.getElementById('image-upload-form'));
 
-
                 fetch('/path-to-image_change_handler', {
                     method: 'POST',
                     credentials: 'include',
@@ -106,10 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 })
                 .then(data => {
-
                     // 분석 결과에 따라 다음 페이지로 이동 또는 메시지 표시
                     if(data.result === 'success') {
-                        window.location.href = '/airemodeling_result';
+                        window.location.href = '/airemodeling_result2';
                     } else {
                         alert('업로드에 실패했습니다.');
                     }

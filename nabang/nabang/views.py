@@ -138,6 +138,7 @@ def image_upload_handler(request):
         return JsonResponse({'result': 'error'}, status=400)
 
 def airemodeling_result(request):
+    print('리절트 시작')
     analysis_result2 = request.session.get('analysis_result2', {})
     image_url = request.session.get('image_url', '')
     
@@ -147,6 +148,8 @@ def airemodeling_result(request):
         'rkwk' : analysis_result2.get('Rkwk'),          
         'image_url': image_url,  # 이미지 URL 추가
     }
+    print('12312413r2434t5413545')   
+    print(context['result'])   
     print(context['result'])    
     print(context['cho_style'])    
     print(context['rkwk'])    
@@ -155,6 +158,7 @@ def airemodeling_result(request):
     return render(request, 'airemodeling_result.html', context)  
 
 def airecommend_result(request):
+    print('리절트 시작')
     analysis_result = request.session.get('analysis_result', {})
     image_url = request.session.get('image_url', '')
     #로그 확인 부분

@@ -69,9 +69,8 @@
         {% else %}
             <p>분석 결과가 없습니다.</p>
         {% endif %}
-
         <!-- {% endblock %} -->
-        
+
         <div class="product-list-container">
             <h2 class="product-list-title">추천 가구</h2>
             <div class="product-row">
@@ -137,13 +136,6 @@
                 </ul>
                 <a href="{% url 'password_change' %}">[암호 변경하기]</a>
                 <a href="{% url 'delete_account' %}">[회원탈퇴]</a>
-                {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                 {% endif %}
                 {% endblock %}
             {% endif %}
         </div>

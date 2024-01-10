@@ -36,6 +36,7 @@
         <h2>AI기반 맞춤형 가구 추천</h2>
         <p>사용자의 방 사진을 기반으로 스타일을 분석하여<br>비슷한 분위기의 가구를 추천해줍니다.</p>
     </section>
+
 <section class="file-upload-section">
     <form id="image-upload-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -47,6 +48,7 @@
                         <img src="{% static 'images/picture.png' %}" alt="업로드 아이콘" />
                         여기를 클릭하거나 파일을 드래그하세요.
                     </div>
+
                     <img id="preview-image" src="#" alt="Image preview" style="display: none;">
                     <div id="change-instructions" style="display: none;">
                     <p>다른 이미지를 선택하시려면 박스를 클릭하세요.</p>
@@ -65,6 +67,7 @@
     <button id="analyze-button2" class="analyze-button2" type="button" disabled>분석하기</button>
     </form>
 </section>
+
 <section class="tip-section">
     <h2 class="main-title">Tip!</h2>
     <div class="container">
@@ -129,13 +132,7 @@
                 </ul>
                 <a href="{% url 'password_change' %}">[암호 변경하기]</a>
                 <a href="{% url 'delete_account' %}">[회원탈퇴]</a>
-                {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                 {% endif %}
+                
                 {% endblock %}
             {% endif %}
         </div>
