@@ -11,8 +11,8 @@ import nabang.utils.style_classify as style_classify
 import nabang.utils.gpt_recommendation as gpt_recommendation
 import joblib, os
 
-style_model = joblib.load('./nabang/utils/model/RFC.joblib')
-le = joblib.load('./nabang/utils/model/label_encoder_r.joblib') # Load the LabelEncoder
+style_model = joblib.load('./nabang/utils/ML/RFC3.joblib')
+le = joblib.load('./nabang/utils/ML/label_encoder_v2.joblib') # Load the LabelEncoder
 
 def index(request):
     return render(request, 'index.html')
