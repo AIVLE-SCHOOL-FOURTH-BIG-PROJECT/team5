@@ -82,6 +82,26 @@ def image_change_handler(request):
     else:
         return JsonResponse({'result': 'error'}, status=400)
 
+def airemodeling_result2(request):
+    print('리절트 시작')
+    analysis_result2 = request.session.get('analysis_result2', {})
+    image_url = request.session.get('image_url', '')
+    
+    context = {
+        'result': '리모델링 결과',
+        'cho_style': analysis_result2.get('cho_st'),
+        'rkwk' : analysis_result2.get('Rkwk'),          
+        'image_url': image_url,  # 이미지 URL 추가
+    }
+    print('12312413r2434t5413545')   
+    print(context['result'])   
+    print(context['result'])    
+    print(context['cho_style'])    
+    print(context['rkwk'])    
+    print(context['image_url'])    
+    
+    return render(request, 'airemodeling_result.html', context)  
+
 def image_upload_handler(request):
     if request.method == 'POST':
         try:
@@ -136,26 +156,6 @@ def image_upload_handler(request):
             return JsonResponse({'result': 'error', 'reason': str(e)}, status=500)
     else:
         return JsonResponse({'result': 'error'}, status=400)
-
-def airemodeling_result(request):
-    print('리절트 시작')
-    analysis_result2 = request.session.get('analysis_result2', {})
-    image_url = request.session.get('image_url', '')
-    
-    context = {
-        'result': '리모델링 결과',
-        'cho_style': analysis_result2.get('cho_st'),
-        'rkwk' : analysis_result2.get('Rkwk'),          
-        'image_url': image_url,  # 이미지 URL 추가
-    }
-    print('12312413r2434t5413545')   
-    print(context['result'])   
-    print(context['result'])    
-    print(context['cho_style'])    
-    print(context['rkwk'])    
-    print(context['image_url'])    
-    
-    return render(request, 'airemodeling_result.html', context)  
 
 def airecommend_result(request):
     print('리절트 시작')

@@ -39,8 +39,9 @@
         <div class="uploaded-image">
             {% if image_url %}
                 <img id="uploaded-image" src="{{ image_url.url }}" alt="Uploaded Image">
-            {% endif %}
+            {% else %}
                 <p>사진이 없스무니다</p>
+            {% endif %}
         </div>
     </section>
 
