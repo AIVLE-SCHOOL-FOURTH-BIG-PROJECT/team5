@@ -103,6 +103,15 @@
                 
                 {% endblock %}
             {% endif %}
+            {% if messages %}
+                <script type="text/javascript">
+                    window.onload = function() {
+                        {% for message in messages %}
+                            alert("{{ message }}");
+                        {% endfor %}
+                    }
+                </script>
+            {% endif %}
         </div>
     </div>
     <script src="{% static 'js/common.js' %}"></script>

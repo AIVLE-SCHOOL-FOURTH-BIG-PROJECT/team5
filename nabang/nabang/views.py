@@ -225,10 +225,16 @@ def check_username(request):
     return render({'error': '이미 사용 중인 아이디입니다.'})
 
 class MyPasswordChangeView(PasswordChangeView) :
+    template_name = 'registration/change_pw.html'
     success_url = reverse_lazy('index')
     def form_valid(self, form):
-        messages.info(self.request, '암호 변경을 완료했습니다!')
+        messages.success(self.request, '암호 변경을 성공했습니다.')
         return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # 폼이 유효하지 않을 때 사용자에게 메시지를 보냅니다.
+        messages.error(self.request, '암호 변경을 실패했습니다. 다시 시도해 주세요.')
+        return super().form_invalid(form)
     
 @login_required
 def delete_account(request):
