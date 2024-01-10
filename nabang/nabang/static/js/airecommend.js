@@ -76,72 +76,69 @@ document.addEventListener('DOMContentLoaded', function() {
         analyzeButton.addEventListener('click', function() {
             var fileInput = document.getElementById('file-upload');
             if (fileInput && fileInput.files.length > 0) {
-                var formData = new FormData(document.getElementById('image-upload-form'));
+                uploadAndAnalyzeImage(fileInput.files[0]);
+            }
+        });
+    }
 
+    function uploadAndAnalyzeImage(file) {
+        var formData = new FormData();
+        formData.append('file', file);
 
-                fetch('/path-to-image-upload-handler', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: formData
-                })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Network response was not ok.');
-                    }
-                })
-                .then(data => {
+        fetch('/path-to-image-upload-handler', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result === 'success') {
+                // 이미지 분석 결과를 받아서 원형 그래프에 표시
+                drawColorChart(data.colorAnalysis);
+            } else {
+                alert('업로드에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('업로드 중 오류가 발생했습니다.');
+        });
+    }
+    if (window.location.pathname.endsWith('/airecommend_result')) {
+        fetchColorDataAndDrawChart();
+    }
 
-                    // 분석 결과에 따라 다음 페이지로 이동 또는 메시지 표시
-                    if(data.result === 'success') {
-                        window.location.href = '/airecommend_result';
-                    } else {
-                        alert('업로드에 실패했습니다.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('업로드 중 오류가 발생했습니다.');
-                });
+    function fetchColorDataAndDrawChart() {
+        fetch('/get-color-data') // 서버에서 색상 데이터를 가져오는 API 경로
+            .then(response => response.json())
+            .then(colorData => {
+                drawColorChart(colorData);
+            })
+            .catch(error => console.error('Error fetching color data:', error));
+    }
+
+    function drawColorChart(colorData) {
+        const ctx = document.getElementById('colorChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: colorData.map(item => item.percentage),
+                    backgroundColor: colorData.map(item => `rgb(${item.rgb.join(',')})`),
+                }],
+                labels: colorData.map(item => `${item.label} (${item.percentage}%)`),
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: '색상 분석 결과'
+                }
             }
         });
     }
 });
-
-// document.addEventListener('DOMContentLoaded', function() {
-//     // 페이지 로딩 완료 후 실행될 함수
-
-//     function fetchProducts() {
-//         // 서버에서 상품 데이터를 가져오는 함수
-//         fetch('/api/products') // API 엔드포인트는 예시입니다.
-//             .then(response => response.json())
-//             .then(data => {
-//                 displayProducts(data.products);
-//             })
-//             .catch(error => console.error('Error fetching products:', error));
-//     }
-
-//     function displayProducts(products) {
-//         // 상품 데이터를 페이지에 표시하는 함수
-//         const productRow = document.querySelector('.product-row');
-//         productRow.innerHTML = ''; // 기존 상품 목록을 초기화
-
-//         products.forEach(product => {
-//             const productCard = `
-//                 <div class="product-card">
-//                     <a href="${product.purchase_link}" target="_blank" class="product-link">
-//                         <div class="product-image" style="background-image: url('${product.image_url}');"></div>
-//                         <div class="product-info">
-//                             <h3 class="product-name">${product.name}</h3>
-//                             <p class="product-price">${product.price}</p>
-//                         </div>
-//                     </a>
-//                 </div>
-//             `;
-//             productRow.insertAdjacentHTML('beforeend', productCard);
-//         });
-//     }
-
-//     fetchProducts(); // 상품 데이터를 가져와서 페이지에 표시
-// });

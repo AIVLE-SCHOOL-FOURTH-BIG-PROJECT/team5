@@ -318,3 +318,18 @@ def airemodeling(request):
 
 def airemodeling_result(request):
     return render(request, 'airemodeling_result.html')
+
+def color_analysis_api(request):
+    analysis_result = request.session.get('analysis_result', {})
+    color_per = analysis_result.get('color_percentage', [])
+
+    # RGB 값이 0~1 범위로 되어있는 것을 가정하고 255를 곱해서 정규화합니다.
+    normalized_color_per = [
+        {
+            'color': [round(c * 255) for c in color['color']],
+            'percentage': color['percentage']
+        }
+        for color in color_per
+    ]
+
+    return JsonResponse(normalized_color_per, safe=False)

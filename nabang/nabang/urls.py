@@ -44,6 +44,7 @@ urlpatterns = [
     path('accounts/kakao/login/callback/', views.kakao_login, name='custom_kakao'), # custom kakaotalk loginL
     path('airemodeling/', views.airemodeling, name='airemodeling'),
     path('airemodeling_result/', views.airemodeling_result, name='airemodeling_result'),
+    path('color_analysis_api', views.color_analysis_api, name='color_analysis_api'),
 ]
 
 if settings.DEBUG:

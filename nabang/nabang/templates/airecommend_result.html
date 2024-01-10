@@ -32,6 +32,7 @@
             {% endif %}
         </div>
     </nav>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="airecommend-page">
     <section class="ai-recommend-section">
@@ -44,33 +45,40 @@
     </section>
 
     <main>
-        {% block content %}
+        <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
+         <!-- 분석 결과 영역 -->
+         {% block content %}
         <h1>{{ result }}</h1>
         {% if color_per and style_per %}
-        <div class="colors-container">
-            {% comment %} {% for color, per in color_per %}
-            <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
-            <p style="margin-left: 10px;">비율: {{ per }}%</p>
-            {% endfor %} {% endcomment %}
-            {% for color, per in color_per %}
-                <div style="display: inline-block;">
-                    <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
-                    <p style="display: inline-block; margin-left: 10px;">비율: {{ per }}%</p>
-                </div>
-            {% endfor %}
+        <div class="analysis-results">
+            <!-- 색상 분석 결과를 표시하는 영역 -->
+            <div class="colors-analysis">
+                <h2>색상 분석</h2>
+                <!-- 원형 그래프를 표시할 캔버스 요소 추가 -->
+                <canvas id="colorChart"></canvas>
+            </div>
 
-            {% for style, per in style_per %}
-            <p>스타일: {{ style }} 비율: {{ per }}%</p>
-            {% endfor %}
+            <!-- 스타일 분석 결과를 표시하는 영역 -->
+            <div class="styles-analysis">
+                <h2>스타일 분석</h2>
+                {% for style, per in style_per %}
+                <p>스타일: {{ style }} 비율: {{ per }}%</p>
+                {% endfor %}
+            </div>
+             <!-- 스타일 분석 결과를 표시하는 영역 -->
+             <div class="styles-analysis">
+                 <h2>스타일 분석</h2>
+                 {% for style, per in style_per %}
+                 <p>스타일: {{ style }} 비율: {{ per }}%</p>
+                 {% endfor %}
+             </div>
+         </div>
+         {% else %}
+             <p>분석 결과가 없습니다.</p>
+         {% endif %}
 
-            <p>추천 가구: {{ reco_furn }}</p>
-        </div>
-        {% else %}
-            <p>분석 결과가 없습니다.</p>
-        {% endif %}
-
-        {% endblock %}
-        
+         {% endblock %}
+    </main>
         <div class="product-list-container">
             <h2 class="product-list-title">추천 가구</h2>
             <div class="product-row">
@@ -86,14 +94,7 @@
                 </div>
                 {% endfor %}
             </div>
-            <!-- Pagination -->
-            <div class="pagination">
-                <button class="prev-page">이전</button>
-                <span class="page-number">1</span>
-                <button class="next-page">다음</button>
-            </div>
         </div>
-    </main>
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
@@ -147,6 +148,56 @@
             {% endif %}
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if color_per %}
+                // RGB 값을 0에서 255 사이의 값으로 변환하는 함수
+                function convertToRGB(colorArray) {
+                    return colorArray.map(function(color) {
+                        return Math.floor(color * 255);
+                    });
+                }
+
+                // 서버에서 제공하는 RGB 소수점 값
+                var rawColorData = {{ color_per|safe }};
+                
+                // 변환된 RGB 값을 저장하는 배열
+                var convertedColorData = rawColorData.map(function(colorInfo) {
+                    return `rgb(${convertToRGB(colorInfo.color).join(',')})`;
+                });
+
+                // Chart.js에 전달할 RGB 문자열 배열
+                var chartColors = convertedColorData;
+
+                // 차트 데이터 세팅
+                var chartData = {
+                    datasets: [{
+                        data: rawColorData.map(function(colorInfo) { return colorInfo.per; }), // 각 색상의 비율
+                        backgroundColor: chartColors,
+                    }],
+                    labels: rawColorData.map(function(colorInfo) { return colorInfo.label; }) // 라벨
+                };
+
+                // 차트 설정
+                var ctx = document.getElementById('colorChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: '색상 분석 결과'
+                        }
+                    }
+                });
+            {% endif %}
+        });
+    </script>
     <script src="{% static 'js/airecommend.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
 </body>
