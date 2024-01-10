@@ -46,13 +46,27 @@ def image_upload_handler(request):
             image_file.seek(0)
             size = objects['size'][0] * objects['size'][1]
             style_percentage =[]
+            tempdic ={}
             for obj in objects['objects']:
                 percent = viseionAI.box_percentage(size, obj['box'])
                 crop_processing = style_classify.process_image_file(obj['crop_img'])
                 crop_predict = style_model.predict(crop_processing)
                 crop_style = le.inverse_transform(crop_predict)
-                temp =[crop_style[0], percent] # 각 obj 스타일-비율
-                style_percentage.append(temp) # 순위별 style-비율
+                style = str(crop_style[0])
+                print(style, type(style))
+                try:
+                    tempdic[style] += round(percent, 2)
+                except:
+                    tempdic[style] = round(percent, 2)
+                    
+            # temp =[crop_style[0], percent] # 각 obj 스타일-비율
+            print(tempdic)
+            # style_percentage.append(temp) # 순위별 style-비율
+            total_percentage = sum(tempdic.values())
+            for sty, per in tempdic.items():
+                adjusted_percentage = (per / total_percentage) * 100
+                temp = [sty, round(adjusted_percentage, 2)]
+                style_percentage.append(temp)
             print(style_percentage)
             
             num_colors = 3
