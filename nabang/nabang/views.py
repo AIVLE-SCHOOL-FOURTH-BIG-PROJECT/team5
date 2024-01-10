@@ -33,7 +33,6 @@ def index(request):
 def airecommend(request):
     return render(request, 'airecommend.html')
 
-
 def file_upload(request):
     if request.method == 'POST' and request.FILES['file']:
         uploaded_file = request.FILES['file']
@@ -83,7 +82,6 @@ def image_change_handler(request):
         return JsonResponse({'result': 'error'}, status=400)
 
 def airemodeling_result2(request):
-    print('리절트 시작')
     analysis_result2 = request.session.get('analysis_result2', {})
     image_url = request.session.get('image_url', '')
     
@@ -93,12 +91,6 @@ def airemodeling_result2(request):
         'rkwk' : analysis_result2.get('Rkwk'),          
         'image_url': image_url,  # 이미지 URL 추가
     }
-    print('12312413r2434t5413545')   
-    print(context['result'])   
-    print(context['result'])    
-    print(context['cho_style'])    
-    print(context['rkwk'])    
-    print(context['image_url'])    
     
     return render(request, 'airemodeling_result.html', context)  
 
@@ -112,13 +104,25 @@ def image_upload_handler(request):
             image_file.seek(0)
             size = objects['size'][0] * objects['size'][1]
             style_percentage =[]
+            tempdic = {}
             for obj in objects['objects']:
                 percent = viseionAI.box_percentage(size, obj['box'])
                 crop_processing = style_classify.process_image_file(obj['crop_img'])
                 crop_predict = style_model.predict(crop_processing)
                 crop_style = le.inverse_transform(crop_predict)
-                temp =[crop_style[0], percent] # 각 obj 스타일-비율
-                style_percentage.append(temp) # 순위별 style-비율
+                style = str(crop_style[0])
+                print(style, type(style))
+                try:
+                    tempdic[style] += round(percent, 2)
+                except:
+                    tempdic[style] = round(percent, 2)
+                    
+            # temp =[crop_style[0], percent] # 각 obj 스타일-비율
+            print(tempdic)
+            # style_percentage.append(temp) # 순위별 style-비율
+            for sty, per in tempdic.items():
+                temp = [sty,round(per,2)]
+                style_percentage.append(temp)
             print(style_percentage)
             
             num_colors = 3
@@ -158,7 +162,6 @@ def image_upload_handler(request):
         return JsonResponse({'result': 'error'}, status=400)
 
 def airecommend_result(request):
-    print('리절트 시작')
     analysis_result = request.session.get('analysis_result', {})
     image_url = request.session.get('image_url', '')
     #로그 확인 부분
@@ -176,10 +179,6 @@ def airecommend_result(request):
         'image_url': image_url,  # 이미지 URL 추가
         'products': products
     }
-    print(context['result'])
-    print(context['color_per'])    
-    print(context['style_per'])    
-    print(context['image_url'])    
         
     return render(request, 'airecommend_result.html', context)        
     
