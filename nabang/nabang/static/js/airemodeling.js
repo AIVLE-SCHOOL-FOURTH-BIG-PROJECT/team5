@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateAnalyzeButton() {
         const fileInput = document.getElementById('file-upload');
         const styleOptions = document.querySelector('input[name="style"]:checked');
-        const analyzeButton = document.getElementById('analyze-button2');
+        const analyzeButton = document.getElementById('analyze-button');
         if (fileInput && analyzeButton) {
             analyzeButton.disabled = !(fileInput.files.length && styleOptions);
         }
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 이미지 분석 시작 버튼 이벤트 리스너
-    const analyzeButton2 = document.getElementById('analyze-button2');
+    const analyzeButton2 = document.getElementById('analyze-button');
     if (analyzeButton2) {
         analyzeButton2.addEventListener('click', function() {
             var fileInput2 = document.getElementById('file-upload');

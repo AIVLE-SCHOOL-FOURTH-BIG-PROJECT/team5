@@ -6,7 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맞춤형 가구 추천</title>
+    <title>나만의 방 나방</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <nav class="nav-container">
         <div class="nav-content">
@@ -33,32 +34,58 @@
         </div>
     </nav>
 </head>
-<body class="airecommend-page">
+<body class="airemodeling-page">
     <section class="ai-recommend-section">
-        <h2>AI기반 맞춤형 가구 추천</h2>
-        <div class="uploaded-image">
-            {% if image_url %}
-                <img id="uploaded-image" src="{{ image_url.url }}" alt="Uploaded Image">
-            {% else %}
-                <p>사진이 없스무니다</p>
-            {% endif %}
+        <h2>리모델링 결과</h2>
+        <div class="uploaded-image-container">
+            <img id="uploaded-image" src="{{ re_img }}" alt="Uploaded Image" class="uploaded-image">
         </div>
+        <a href="/airemodeling/" class="remodeling-button">다시 리모델링하기</a>
     </section>
 
     <main>
-        {% block content %}
-        <h1>{{ result }}</h1>
-        {% if cho_style %}
-        <p>선택한 스타일: {{ cho_style }}</p>
-        <!-- <div class="colors-container">
-            <p>선택한 스타일: {{ cho_style }}</p>
-        </div> -->
-        {% else %}
-            <p>분석 결과가 없습니다.</p>
-        {% endif %}
-        {% endblock %}
+        <div class="product-list-container">
+            <h2 class="product-list-title">추천 가구</h2>
+            <div class="product-row">
+                <div class="product-card">
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구5.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">Bamboo Desk Organizer, Bamboo Desktop Organizer Wood</h3>
+                            <p class="product-price">$ 33.99</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="product-card">
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구6.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">mooas Flatwood Wall Clock, 12"WoodNon-Ticking Sweep</h3>
+                            <p class="product-price">$ 19.99</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="product-card">
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구7.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">CubiCubi Computer Home Office Desk with 2 Drawers</h3>
+                            <p class="product-price">$ 72.24</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="product-card">
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구8.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">JONATHAN Y SEU100-3 Haze Solid Low-Pile Indoor Area-Rug</h3>
+                            <p class="product-price">$ 70.21</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </main>
-
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
@@ -79,17 +106,21 @@
             <form id="login-form" method="post" action="{% url 'login' %}">
                 {% csrf_token %}
                 <h1>로그인</h1>
-                <input type="text" placeholder="아이디" name="username" required>
-                <input type="password" placeholder="비밀번호" name="password" required>
-                <button type="submit">로그인</button>
+                <div class="input-container">
+                    <input type="text" placeholder="아이디" name="username" required>
+                    <input type="password" placeholder="비밀번호" name="password" required>
+                    <button type="submit" class="login-button">로그인</button>
+                </div>
             </form>
             <!-- 소셜 로그인 버튼 -->
-            <div class="social-login">
+            <div class="social-icons">
                 {% load socialaccount %}
-                <a href="{% provider_login_url 'kakao' %}"><button class="social-button kakao-login">카카오톡 로그인</button></a>
-                <a href="{% provider_login_url 'naver' %}"><button class="social-button naver-login">네이버 로그인</button></a>
-                <a href="{% provider_login_url 'google' %}"><button class="social-button google-login">구글 로그인</button></a>
-                <a href="{% url 'find_user_info' %}"><button class="social-button id_serch">아이디/비밀번호 찾기</button></a>
+                <a href='{% provider_login_url "kakao" %}' class="social-icon"><img src="{% static 'images/kakaotalk.png' %}" alt="kakaotalk"></a>
+                <a href="{% provider_login_url 'naver' %}" class="social-icon"><img src="{% static 'images/naver.png' %}" alt="naver"></a>
+                <a href="{% provider_login_url 'google' %}" class="social-icon"><img src="{% static 'images/google.png' %}" alt="google"></a>
+            </div>
+            <div class="signup-prompt">
+                아직 회원이 아니신가요?? <a href="/signup">회원가입</a> <!-- 회원가입 링크 -->
             </div>
             {% else %}
                 {% block additional_content %}
@@ -101,18 +132,11 @@
                 </ul>
                 <a href="{% url 'password_change' %}">[암호 변경하기]</a>
                 <a href="{% url 'delete_account' %}">[회원탈퇴]</a>
-                {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                 {% endif %}
                 {% endblock %}
             {% endif %}
         </div>
     </div>
-    <script src="{% static 'js/airemodeling.js' %}"></script>
+    <script src="{% static 'js/airecommend.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
 </body>
 </html>

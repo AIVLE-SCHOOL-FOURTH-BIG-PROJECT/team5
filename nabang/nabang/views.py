@@ -14,7 +14,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError
+from django.db import IntegrityError, connection
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
@@ -22,7 +22,9 @@ from django.core.exceptions import ObjectDoesNotExist
 import nabang.utils.viseionAI as viseionAI
 import nabang.utils.style_classify as style_classify
 import nabang.utils.gpt_recommendation as gpt_recommendation
+import nabang.utils.gpt_change_room_style as gpt_change_room_style
 import joblib, os, requests
+from .utils.color_labeling import color_label
 
 style_model = joblib.load('./nabang/utils/svm_model.joblib')
 le = joblib.load('./nabang/utils/label_encoder.joblib') # Load the LabelEncoder
@@ -53,26 +55,78 @@ def image_change_handler(request):
     if request.method == 'POST':
         try:
             image_file = request.FILES['file']
+            fs = FileSystemStorage()
+            filename = fs.save(image_file.name, image_file)
+            uploaded_file_url = fs.url(filename)
             
             selected_style = request.POST.get('style')
-            print(selected_style)
-            rkwk = 6
+            print('1' ,selected_style)
+            
+            img_path = f'./media/{image_file}'
+            remodeling_img = gpt_change_room_style.change_room_style(img_path, selected_style)
+            
+            # image_url 이미지 저장
+            save_path = f'./media/remodeling.png'
+            response = requests.get(remodeling_img, stream=True) 
+            if response.status_code == 200:
+                with open(save_path, 'wb') as file:
+                    for chunk in response.iter_content(chunk_size=128): 
+                        file.write(chunk)
+                print("이미지 다운로드 완료: {save_path}")
+            else:
+                print("이미지 다운로드 실패. HTTP 상태코드: {response.status_code}")
+                
+            #리모델링 이미지 분석
+            image_file.seek(0)
+            objects = viseionAI.obj_detection_file(image_file.read())
+            image_file.seek(0)
+            size = objects['size'][0] * objects['size'][1]
+            style_percentage =[]
+            tempdic ={}
+            for obj in objects['objects']:
+                percent = viseionAI.box_percentage(size, obj['box'])
+                crop_processing = style_classify.process_image_file(obj['crop_img'])
+                crop_predict = style_model.predict(crop_processing)
+                crop_style = le.inverse_transform(crop_predict)
+                style = str(crop_style[0])
+                print(style, type(style))
+                try:
+                    tempdic[style] += round(percent, 2)
+                except:
+                    tempdic[style] = round(percent, 2)
+                   
+            # temp =[crop_style[0], percent] # 각 obj 스타일-비율
+            print(tempdic)
+            # style_percentage.append(temp) # 순위별 style-비율
+            total_percentage = sum(tempdic.values())
+            for sty, per in tempdic.items():
+                adjusted_percentage = (per / total_percentage) * 100
+                temp = [sty, round(adjusted_percentage, 2)]
+                style_percentage.append(temp)
+            print(style_percentage)
+            num_colors = 10
+            color_percentage = extract_ordered_dominant_colors(image_file, num_colors) # 순위별 rgb-비율
+            print('all: ',color_percentage)
+            
+
+            image_file.seek(0)
+            # 사용자의 사진에서 가장 dominant 한 색깔을 추출, 미리 db가구들 색깔 라벨링 해둔대로 라벨을 return
+            color_label_num = color_label(image_file)
+            print('color_label', color_label_num)
+            
+            image_file.seek(0)
+            reco_furniture = gpt_recommendation.analyze_room_and_recommend_furniture(img_path)
+            print('추천 가구: ',reco_furniture)
             
             # 세션에 분석 결과 저장
             request.session['analysis_result2'] = {
-                'cho_st': selected_style,
-                'Rkwk': rkwk,
+                'remodeling_img': remodeling_img,
+                'style_percentage': style_percentage,
+                'reco_furniture': reco_furniture,
+                'color_label': color_label_num,
             }
             
-            fs = FileSystemStorage()
-            filename = fs.save(image_file.name, image_file)
-            image_url = fs.url(filename)
-            request.session['image_url'] = {
-                'url': image_url
-            }
-            # file_upload 함수에서 저장한 이미지 URL을 사용
             uploaded_file_url = request.session.get('uploaded_image_url', '')
-
             return JsonResponse({'result': 'success', 'image_url': uploaded_file_url})
         except Exception as e:
             # 오류 처리
@@ -83,14 +137,34 @@ def image_change_handler(request):
 
 def airemodeling_result2(request):
     analysis_result2 = request.session.get('analysis_result2', {})
-    image_url = request.session.get('image_url', '')
+    gptr = analysis_result2.get('reco_furniture')
+    color_l = analysis_result2.get('color_label')
+    query = "SELECT * from furniture where 1=1"
+    style = analysis_result2.get('style_percentage')
+    style1 = style[0][0]
+    # if style1:
+    #     query+=f" AND style LIKE '%{style1[1:-1]}%'"
+    # if gptr:
+    #     query+=f" AND category LIKE '%{gptr}%'"
+    # if color_l:
+    #     query+=f" AND color = '{color_l}'"
+    # query +=" LIMIT 4"
+    # with connection.cursor() as cursor:
+    #     cursor.execute(query)
+    #     furniture_list=cursor.fetchall()
+    # print(query)
     
     context = {
         'result': '리모델링 결과',
-        'cho_style': analysis_result2.get('cho_st'),
-        'rkwk' : analysis_result2.get('Rkwk'),          
-        'image_url': image_url,  # 이미지 URL 추가
+        're_img': analysis_result2.get('remodeling_img'),
+        'style_per': style,
+        'reco_fur': gptr,
+        'color_label': color_l,
     }
+    print(context['re_img'])
+    print(context['style_per'])
+    print(context['reco_fur'])
+    print(context['color_label'])
     
     return render(request, 'airemodeling_result.html', context)  
 

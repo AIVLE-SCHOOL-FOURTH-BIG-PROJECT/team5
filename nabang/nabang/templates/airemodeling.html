@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맞춤형 가구 추천</title>
+    <title>나만의 방 나방</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <nav class="nav-container">
         <div class="nav-content">
@@ -31,7 +32,7 @@
         </div>
     </nav>
 </head>
-<body class="airecommend-page">
+<body class="airemodeling-page">
     <section class="ai-recommend-section">
         <h2>AI기반 맞춤형 가구 추천</h2>
         <p>사용자의 방 사진을 기반으로 스타일을 분석하여<br>비슷한 분위기의 가구를 추천해줍니다.</p>
@@ -57,14 +58,14 @@
             </div>
         </label>
         <div class="style-options">
-            <label><input type="radio" name="style" value="Classic" onchange="updateAnalyzeButton()"> Classic</label>
+            <label><input type="radio" name="style" value="classic" onchange="updateAnalyzeButton()"> Classic</label>
             <label><input type="radio" name="style" value="Contemporary" onchange="updateAnalyzeButton()"> Contemporary</label>
             <label><input type="radio" name="style" value="Country" onchange="updateAnalyzeButton()"> Country</label>
             <label><input type="radio" name="style" value="Modern" onchange="updateAnalyzeButton()"> Modern</label>
             <label><input type="radio" name="style" value="Urban" onchange="updateAnalyzeButton()"> Urban</label>
         </div>
     </div>
-    <button id="analyze-button2" class="analyze-button2" type="button" disabled>분석하기</button>
+    <button id="analyze-button" class="analyze-button" type="button" disabled>리모델링 시작</button>
     </form>
 </section>
 
@@ -110,20 +111,24 @@
             <form id="login-form" method="post" action="{% url 'login' %}">
                 {% csrf_token %}
                 <h1>로그인</h1>
-                <input type="text" placeholder="아이디" name="username" required>
-                <input type="password" placeholder="비밀번호" name="password" required>
-                <button type="submit">로그인</button>
+                <div class="input-container">
+                    <input type="text" placeholder="아이디" name="username" required>
+                    <input type="password" placeholder="비밀번호" name="password" required>
+                    <button type="submit" class="login-button">로그인</button>
+                </div>
             </form>
             <!-- 소셜 로그인 버튼 -->
-            <div class="social-login">
+            <div class="social-icons">
                 {% load socialaccount %}
-                <a href="{% provider_login_url 'kakao' %}"><button class="social-button kakao-login">카카오톡 로그인</button></a>
-                <a href="{% provider_login_url 'naver' %}"><button class="social-button naver-login">네이버 로그인</button></a>
-                <a href="{% provider_login_url 'google' %}"><button class="social-button google-login">구글 로그인</button></a>
-                <a href="{% url 'find_user_info' %}"><button class="social-button id_serch">아이디/비밀번호 찾기</button></a>
+                <a href='{% provider_login_url "kakao" %}' class="social-icon"><img src="{% static 'images/kakaotalk.png' %}" alt="kakaotalk"></a>
+                <a href="{% provider_login_url 'naver' %}" class="social-icon"><img src="{% static 'images/naver.png' %}" alt="naver"></a>
+                <a href="{% provider_login_url 'google' %}" class="social-icon"><img src="{% static 'images/google.png' %}" alt="google"></a>
+            </div>
+            <div class="signup-prompt">
+                아직 회원이 아니신가요?? <a href="/signup">회원가입</a> <!-- 회원가입 링크 -->
             </div>
             {% else %}
-                {% block content %}
+                {% block additional_content %}
                 <h1> 내정보 </h1>
                 <ul>
                     <li> name : {{user}}</li>
@@ -132,7 +137,6 @@
                 </ul>
                 <a href="{% url 'password_change' %}">[암호 변경하기]</a>
                 <a href="{% url 'delete_account' %}">[회원탈퇴]</a>
-                
                 {% endblock %}
             {% endif %}
         </div>
