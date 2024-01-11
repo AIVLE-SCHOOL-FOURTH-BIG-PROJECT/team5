@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>맞춤형 가구 추천</title>
+    <title>나만의 방 나방</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <nav class="nav-container">
         <div class="nav-content">
@@ -35,62 +35,53 @@
 </head>
 <body class="airemodeling-page">
     <section class="ai-recommend-section">
-        <h2>AI기반 맞춤형 가구 추천</h2>
-        <div class="uploaded-image">
-            {% if image_url %}
-                <img id="uploaded-image" src="{{ image_url.url }}" alt="Uploaded Image">
-            {% endif %}
+        <h2>리모델링 결과</h2>
+        <div class="uploaded-image-container">
+            <img id="uploaded-image" src="{% static 'images/sample.png' %}" alt="Uploaded Image" class="uploaded-image">
         </div>
+        <a href="/airemodeling/" class="remodeling-button">다시 리모델링하기</a>
     </section>
 
     <main>
-        {% block content %}
-        <h1>{{ result }}</h1>
-        {% if color_per and style_per %}
-        <div class="colors-container">
-            {% comment %} {% for color, per in color_per %}
-            <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }}); display: inline-block;"></div>
-            <p style="margin-left: 10px;">비율: {{ per }}%</p>
-            {% endfor %} {% endcomment %}
-            {% for color, per in color_per %}
-                <div style="display: inline-block;">
-                    <div class="color-box" style="width: 50px; height: 50px; background-color: rgb({{ color.0|to_rgb }}, {{ color.1|to_rgb }}, {{ color.2|to_rgb }});"></div>
-                    <p style="display: inline-block; margin-left: 10px;">비율: {{ per }}%</p>
-                </div>
-            {% endfor %}
-
-            {% for style, per in style_per %}
-            <p>스타일: {{ style }} 비율: {{ per }}%</p>
-            {% endfor %}
-
-            <p>추천 가구: {{ reco_furn }}</p>
-        </div>
-        {% else %}
-            <p>분석 결과가 없습니다.</p>
-        {% endif %}
-
-        {% endblock %}
-        
         <div class="product-list-container">
             <h2 class="product-list-title">추천 가구</h2>
             <div class="product-row">
-                {% for product in products %}
                 <div class="product-card">
-                    <a href="{{ product.purchase_link }}" target="_blank" class="product-link">
-                        <div class="product-image" style="background-image: url('{% static 'images/가구1.jpg' %}');"></div>
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구5.jpg' %}');"></div>
                         <div class="product-info">
-                            <h3 class="product-name">{{ product.name }}</h3>
-                            <p class="product-price">{{ product.price }}</p>
+                            <h3 class="product-name">Bamboo Desk Organizer, Bamboo Desktop Organizer Wood</h3>
+                            <p class="product-price">$ 33.99</p>
                         </div>
                     </a>
                 </div>
-                {% endfor %}
-            </div>
-            <!-- Pagination -->
-            <div class="pagination">
-                <button class="prev-page">이전</button>
-                <span class="page-number">1</span>
-                <button class="next-page">다음</button>
+                <div class="product-card">
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구6.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">mooas Flatwood Wall Clock, 12"WoodNon-Ticking Sweep</h3>
+                            <p class="product-price">$ 19.99</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="product-card">
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구7.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">CubiCubi Computer Home Office Desk with 2 Drawers</h3>
+                            <p class="product-price">$ 72.24</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="product-card">
+                    <a href="구매링크" target="_blank" class="product-link">
+                        <div class="product-image" style="background-image: url('{% static 'images/가구8.jpg' %}');"></div>
+                        <div class="product-info">
+                            <h3 class="product-name">JONATHAN Y SEU100-3 Haze Solid Low-Pile Indoor Area-Rug</h3>
+                            <p class="product-price">$ 70.21</p>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </main>

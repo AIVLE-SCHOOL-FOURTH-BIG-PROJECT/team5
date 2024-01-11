@@ -48,15 +48,13 @@
         <!-- 맞춤형 가구 추천에 대한 주요 내용 -->
          <!-- 분석 결과 영역 -->
          {% block content %}
-        <h1>{{ result }}</h1>
-        {% if color_per and style_per %}
-        <div class="analysis-results">
-            <!-- 색상 분석 결과를 표시하는 영역 -->
-            <div class="colors-analysis">
-                <h2>색상 분석</h2>
-                <!-- 원형 그래프를 표시할 캔버스 요소 추가 -->
-                <canvas id="colorChart"></canvas>
-            </div>
+    <h1>{{ result }}</h1>
+    {% if color_per %}
+    <div class="analysis-results">
+        <div class="chart-container">
+            <!-- 원형 그래프를 표시할 캔버스 요소 추가 -->
+            <canvas id="colorChart"></canvas>
+        </div>
 
             <!-- 스타일 분석 결과를 표시하는 영역 -->
             <div class="styles-analysis">
@@ -151,41 +149,21 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             {% if color_per %}
-                // RGB 값을 0에서 255 사이의 값으로 변환하는 함수
-                function convertToRGB(colorArray) {
-                    return colorArray.map(function(color) {
-                        return Math.floor(color * 255);
-                    });
-                }
-
-                // 서버에서 제공하는 RGB 소수점 값
-                var rawColorData = {{ color_per|safe }};
-                
-                // 변환된 RGB 값을 저장하는 배열
-                var convertedColorData = rawColorData.map(function(colorInfo) {
-                    return `rgb(${convertToRGB(colorInfo.color).join(',')})`;
-                });
-
-                // Chart.js에 전달할 RGB 문자열 배열
-                var chartColors = convertedColorData;
-
-                // 차트 데이터 세팅
-                var chartData = {
-                    datasets: [{
-                        data: rawColorData.map(function(colorInfo) { return colorInfo.per; }), // 각 색상의 비율
-                        backgroundColor: chartColors,
-                    }],
-                    labels: rawColorData.map(function(colorInfo) { return colorInfo.label; }) // 라벨
-                };
-
-                // 차트 설정
-                var ctx = document.getElementById('colorChart').getContext('2d');
+                // 색상 분석 결과 데이터
+                const colorData = {{ color_per|safe }};
+                const ctx = document.getElementById('colorChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'doughnut',
-                    data: chartData,
+                    data: {
+                        datasets: [{
+                            data: colorData.map(item => item[1]), // 각 색상의 비율
+                            backgroundColor: colorData.map(item => `rgb(${item[0].join(',')})`), // 각 색상의 RGB 값
+                        }],
+                        labels: colorData.map(item => `색상 ${item[0].join(',')}`) // 라벨에 각 색상 표시
+                    },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false,
+                        maintainAspectRatio: true, // 종횡비 유지
                         legend: {
                             position: 'bottom'
                         },
